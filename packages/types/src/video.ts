@@ -11,4 +11,11 @@ export interface VideoTask {
     fileName: string;
     targetFormat: VideoFormat;
     status: "pending" | "processing" | "completed" | "failed";
+};
+
+export const resolutionMap: Record<VideoFormat, string> = {
+    "1080p": "1920x1080",
+    "720p": "1280x720",
+    "480p": "854x480",
+    "360p": "640x360"
 }

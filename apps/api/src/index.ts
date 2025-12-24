@@ -72,7 +72,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
         const videoId = crypto.randomUUID(); // need to replace with actual db id;
 
         const tasks: { name: string, data: VideoTask }[] = [];
-        
+
         for (const format of videoFormats) {  // all the possible formats
             const jobId = `${fileName}_${format}`;
             const job: VideoTask = {
