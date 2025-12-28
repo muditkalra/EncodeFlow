@@ -33,11 +33,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen px-4 md:px-6 flex flex-col mx-auto">
+          {/* <div className="min-h-screen px-4 md:px-6 flex flex-col mx-auto">
             <Navbar />
-            {children}
+            <div className="flex-1"> */}
+              {children}
+            {/* </div>
             <Footer />
-          </div>
+          </div> */}
         </ThemeProvider>
       </body>
     </html>

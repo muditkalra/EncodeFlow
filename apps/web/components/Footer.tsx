@@ -15,13 +15,13 @@ export default function Footer() {
                 </Button>
             </div>
             <div className="flex gap-6">
-                <Link href={"https://www.linkedin.com/in/muditkalra267/"} className='text-primary'>
+                <Link href={"https://www.linkedin.com/in/muditkalra267/"} className=''>
                     <Linkedin />
                 </Link>
-                <Link href={"https://x.com/muditkalra_45"} className='text-primary'>
+                <Link href={"https://x.com/muditkalra_45"}>
                     <XIcon />
                 </Link>
-                <Link href={"https://github.com/muditkalra"} className='text-primary'>
+                <Link href={"https://github.com/muditkalra"}>
                     <Github />
                 </Link>
             </div>
