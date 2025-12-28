@@ -1,10 +1,11 @@
-import { Cloud, EllipsisVertical, FilePlay, LayoutDashboard, List, LucideIcon, Search, Settings, User2 } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
+import { CloudUpload, Cpu, Database, EllipsisVertical, LayoutDashboard, List, LucideIcon, Settings, User2 } from 'lucide-react';
+import Link from 'next/link';
 // import Logo from './Logo';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
+import { usePathname } from 'next/navigation';
 
 interface item {
 	title: string;
@@ -19,8 +20,8 @@ const items: item[] = [
 	},
 	{
 		title: "Upload Video",
-		url: "/upload",
-		icon: FilePlay
+		url: "/upload-video",
+		icon: CloudUpload
 	},
 	{
 		title: "Jobs",
@@ -30,12 +31,12 @@ const items: item[] = [
 	{
 		title: "Workers",
 		url: "/workers",
-		icon: Search
+		icon: Cpu
 	},
 	{
 		title: "Storage",
 		url: "/storage",
-		icon: Cloud
+		icon: Database
 	},
 	{
 		title: "Settings",
@@ -46,6 +47,9 @@ const items: item[] = [
 
 
 export default function AppSideBar() {
+	const pathname = usePathname();
+	const isActive = (href: string) => pathname == href;
+
 	return (
 		<Sidebar>
 			<SidebarHeader className="py-4">
@@ -61,16 +65,20 @@ export default function AppSideBar() {
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>
-			<SidebarContent className=''>
+			<SidebarContent className='mt-1'>
 				{items.map((item) => (
 					<SidebarGroup className='py-1.5' key={item.title}>
-						<SidebarGroupContent className=''>
-							<SidebarMenuButton asChild className=''>
-								<Link href={item.url}>
-									<item.icon />
-									<span>{item.title}</span>
-								</Link>
-							</SidebarMenuButton>
+						<SidebarGroupContent>
+							<SidebarMenu>
+								<SidebarMenuItem>
+									<SidebarMenuButton asChild isActive={isActive(item.url)} className='data-[active=true]:bg-primary data-[active=true]:text-primary-foreground'>
+										<Link href={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							</SidebarMenu>
 						</SidebarGroupContent>
 					</SidebarGroup>))}
 			</SidebarContent>

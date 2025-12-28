@@ -1,9 +1,7 @@
 import React from 'react'
 
 export default function page() {
-	return (
-		<div className="">
-			dashboard home 
-		</div>
-	)
+  return (
+    <div>upload video page</div>
+  )
 }
