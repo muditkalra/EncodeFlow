@@ -40,7 +40,7 @@ const items: item[] = [
 	},
 	{
 		title: "Settings",
-		url: "/setting",
+		url: "/settings",
 		icon: Settings
 	}
 ]
