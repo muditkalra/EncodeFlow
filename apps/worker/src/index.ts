@@ -15,7 +15,7 @@ const s3Client = createClient("ap-south-1");
 const transcodedBucketName = process.env.AWS_S3_TRANSCODED_BUCKET_NAME!;
 
 async function processVideo(job: { data: VideoTask }) {
-    const { id, bucketName, fileName, targetFormat, videoId } = job.data;
+    const { id, bucketName, fileName, targetResolution, videoId } = job.data;
 
     const dir = path.resolve("tmp");  // tmpv folder;
     await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
@@ -24,7 +24,7 @@ async function processVideo(job: { data: VideoTask }) {
     const localOutput = path.resolve("tmp", `${id}-output.mp4`);
 
     try {
-        console.log(`[${id}] Starting job: ${bucketName}/${fileName} -> ${targetFormat}`);
+        console.log(`[${id}] Starting job: ${bucketName}/${fileName} -> ${targetResolution}`);
 
         // 1. downloading from s3
         console.log(`[${id}] Downloading...`);
@@ -42,9 +42,9 @@ async function processVideo(job: { data: VideoTask }) {
         }
 
         // 2. starting transcoding/processing;
-        const scale = resolutionMap[targetFormat] || "1280x720";
+        const scale = resolutionMap[targetResolution] || "1280x720";
 
-        console.log(`[${id}] Transcoding to ${targetFormat}...`);
+        console.log(`[${id}] Transcoding to ${targetResolution}...`);
         await new Promise<void>((resolve, reject) => {
             if (!ffmpegPath) throw new Error("ffmpeg binary not found");
 
@@ -64,9 +64,9 @@ async function processVideo(job: { data: VideoTask }) {
         })
 
         // 3. uploading back to s3;
-        console.log(`uploading transcoded file ${fileName}_${targetFormat} to s3 `);
+        console.log(`uploading transcoded file ${fileName}_${targetResolution} to s3 `);
 
-        const outputKey = `${videoId}/${targetFormat}.mp4`;
+        const outputKey = `${videoId}/${targetResolution}.mp4`;
 
         const fileStream = fs.createReadStream(localOutput);
         const uploadCmd = new PutObjectCommand({
@@ -77,7 +77,7 @@ async function processVideo(job: { data: VideoTask }) {
         });
         await s3Client.send(uploadCmd);
 
-        console.log(`Done: ${fileName}_${targetFormat}`);
+        console.log(`Done: ${fileName}_${targetResolution}`);
 
         return { status: "completed", outputUrl: `s3://${transcodedBucketName}/${outputKey}` };
     } catch (error) {

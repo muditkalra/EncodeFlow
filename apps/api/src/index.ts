@@ -1,6 +1,6 @@
 import { createQueue } from "@repo/bullq";
 import { createClient, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { videoFormats, type VideoTask } from "@repo/types";
+import { videoResolutions, type VideoTask } from "@repo/types";
 import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
@@ -27,22 +27,23 @@ const videoQueue = createQueue("transcoding-q", redisUrl);
 
 
 // 1. frontend call this to get signed url to put objects in s3;
-// - assuming url will look like this, /upload-url?video-title=xyz&file-extension=mp4
+// - assuming url will look like this, /upload-url?video-title=xyz&format=video/mp4
 app.get("/upload-url", async (req: Request, res: Response) => {
     try {
         const videoTitle = req.query["video-title"];
-        const fileExtension = req.query["file-extension"];
+        const format = req.query["format"];
+        console.log(format, "format");
 
-        if (!videoTitle || !fileExtension) {
-            return res.status(500).json({ message: "Cannot Create url without video-title and file-extension" });
+        if (!videoTitle || !format) {
+            return res.status(500).json({ message: "Cannot Create url without video-title or format" });
         }
 
-        const fileName = `${videoTitle}.${fileExtension}`;
+        const fileName = `${videoTitle}.${format}`;
 
         const command = new PutObjectCommand({
             Bucket: awsS3TempBucketName,
             Key: fileName,
-            ContentType: "video/mp4"
+            ContentType: `video/${format}`
         })
 
         const url = await getSignedUrl(s3Client, command, { expiresIn: 300 });
@@ -73,8 +74,8 @@ app.post("/transcode", async (req: Request, res: Response) => {
 
         const tasks: { name: string, data: VideoTask }[] = [];
 
-        for (const format of videoFormats) {  // all the possible formats
-            const jobId = `${fileName}_${format}`;
+        for (const resolution of videoResolutions) {  // all the possible formats
+            const jobId = `${fileName}_${resolution}`;
             const job: VideoTask = {
                 id: jobId,
                 videoId,
@@ -82,7 +83,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
                 bucketName: awsS3TempBucketName,
                 fileName,
                 status: "pending",
-                targetFormat: format
+                targetResolution: resolution
             }
             const task = {
                 name: "transcode",
@@ -95,8 +96,8 @@ app.post("/transcode", async (req: Request, res: Response) => {
         return res.status(200).json({
             message: "Transcoding started",
             videoId,
-            formats: videoFormats
-        })
+            resolutions: videoResolutions
+        });
 
     } catch (error) {
         console.log(error);

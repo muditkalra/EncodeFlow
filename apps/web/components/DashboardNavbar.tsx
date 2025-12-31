@@ -5,7 +5,7 @@ import { SidebarTrigger } from './ui/sidebar'
 
 export default function DashboardNavbar() {
     return (
-        <nav className='flex items-center justify-between sticky top-0 z-10 p-3.5 border-b'>
+        <nav className='flex items-center justify-between top-0 z-10 p-3.5 border-b'>
             {/* trigger and name */}
             <div className="h-5 flex items-center gap-5">
                 <SidebarTrigger />

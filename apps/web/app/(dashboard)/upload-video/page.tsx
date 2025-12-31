@@ -1,7 +1,10 @@
+import UploadDropzone from '@/components/Upload/UploadDropzone'
 import React from 'react'
 
 export default function page() {
   return (
-    <div>upload video page</div>
+    <div className="p-8">
+      <UploadDropzone />
+    </div>
   )
 }
