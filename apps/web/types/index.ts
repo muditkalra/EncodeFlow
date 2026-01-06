@@ -6,4 +6,11 @@ export interface OutputConfigType {
     includeAudio: boolean
 }
 
-export type UploadState = "IDLE" | "FILE_SELECTED" | "UPLOADING" | "PROCESSING" | "COMPLETED" | "FAILED";
+export type UploadState = "IDLE" | "FILE_SELECTED" | "FETCHINGURL" | "UPLOADING" | "PROCESSING" | "COMPLETED" | "FAILED";
+
+
+export interface VideoDetail {
+    duration: number;
+    width: number;
+    height: number;
+}
