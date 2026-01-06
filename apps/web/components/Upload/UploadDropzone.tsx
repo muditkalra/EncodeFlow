@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
+import { MAX_FILE_SIZE } from '@/utils/constants';
 
 interface Props {
     setVideo: Dispatch<SetStateAction<File | null>>;
@@ -23,8 +24,8 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
             return;
         }
 
-        if (file.size <= 1000 || file.size >= 20000000) {
-            toast.error("Size should be more than a 1KB and less than 20MB");
+        if (file.size <= 1000 || file.size >= MAX_FILE_SIZE) {
+            toast.error("Size should be more than a 1KB and less than 25MB");
             return;
         }
 
