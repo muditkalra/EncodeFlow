@@ -23,6 +23,9 @@ importers:
       '@repo/bullq':
         specifier: workspace:*
         version: link:../../packages/bullq
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/s3':
         specifier: workspace:*
         version: link:../../packages/s3
@@ -160,6 +163,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/s3':
         specifier: workspace:*
         version: link:../../packages/s3
