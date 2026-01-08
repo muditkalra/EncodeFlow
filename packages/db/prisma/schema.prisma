@@ -24,7 +24,8 @@ model Video {
     id          String   @id @default(uuid())
     name        String
     userId      String // will use clerk id here
-    size        BigInt // in bytes
+    fileType    String // video/mp4, video/webm, video/av1 etc.
+    size        Int // in bytes (int can easily hold values in bytes for 20-30MB files)
     duration    Int // in seconds
     width       Int
     height      Int

@@ -55,7 +55,7 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
                                 Upload file for Transcoding
                             </div>
                             <div> drag and drop or click to browse</div>
-                            <span className='text-xs'>( file should be less than 20 MB )</span>
+                            <span className='text-xs'>( file should be less than 25 MB )</span>
                         </div>
                     </div>
                     <Button size="sm" variant="outline" className='cursor-pointer'>

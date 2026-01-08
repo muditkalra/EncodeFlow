@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
 import { awsS3Region, awsS3TempBucketName, redisUrl } from "./config/constants";
+import { prismaClient } from "@repo/db";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -43,7 +44,7 @@ app.get("/upload-url", async (req: Request, res: Response) => {
             ContentType: `${format}`
         })
 
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 300 });
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 300 }); // expires in 5min
 
         res.json({
             url,
@@ -61,16 +62,48 @@ app.get("/upload-url", async (req: Request, res: Response) => {
 // 2. frontend calls this to after putting objects to providing details about file and other things and will trigger transcoding for a particular file;
 app.post("/transcode", async (req: Request, res: Response) => {
     try {
-        const { fileName, config: { format, includeAudio, resolution } } = req.body as TranscodeJobBody;
+        const { outputConfig, ...data } = req.body as TranscodeJobBody;
 
         // checking if file exist or not;
-        const command = new HeadObjectCommand({ Bucket: awsS3TempBucketName, Key: fileName });
+        const command = new HeadObjectCommand({ Bucket: awsS3TempBucketName, Key: data.fileName });
         await s3Client.send(command); // if not found will throw error;
 
-        const videoId = crypto.randomUUID(); // need to replace with actual db id;
+        // creating video entry in db;
+        // const videoId = crypto.randomUUID(); // need to replace with actual db id;
+        const orgUrl = `s3://${awsS3TempBucketName}/${data.fileName}`
+        const video = await prismaClient.video.create({
+            data: {
+                name: data.fileName,
+                userId: data.userId,
+                fileType: data.fileType,
+                size: data.size,
+                duration: data.duration,
+                width: data.width,
+                height: data.height,
+                originalUrl: orgUrl,
+            },
+        });
 
-        const tasks: { name: string, data: VideoTask }[] = [];
+        const job = await prismaClient.job.create({
+            data: {
+                videoId: video.id,
+                outputConfig: JSON.stringify(outputConfig)
+            }
+        });
 
+        const videoTask: VideoTask = {
+            id: job.id,
+            videoId: video.id,
+            fileType: video.fileType,
+            duration: video.duration,
+            fileName: data.fileName,
+            bucketName: awsS3TempBucketName,
+            outputConfig: outputConfig
+        }
+
+        await videoQueue.add("transcode", videoTask)
+
+        // multiple format jobs queue;
         // for (const resolution of videoResolutions) {  // all the possible formats
         //     const jobId = `${fileName}_${resolution}`;
         //     const job: VideoTask = {
@@ -92,8 +125,8 @@ app.post("/transcode", async (req: Request, res: Response) => {
 
         return res.status(200).json({
             message: "Transcoding started",
-            videoId,
-            resolutions: videoResolutions
+            videoId: video.id,
+            config: outputConfig
         });
 
     } catch (error) {

@@ -26,7 +26,7 @@ export default function VideoPreview({ video, videoDetail }: Props) {
             </div>
             <div className="flex justify-center gap-3">
                 <div className="">
-                    <span className='text-muted-foreground'>Duration:</span> {Math.floor(videoDetail.duration)} seconds
+                    <span className='text-muted-foreground'>Duration:</span> {Math.ceil(videoDetail.duration)} seconds
                 </div>
                 <div className="">
                     <span className='text-muted-foreground'>Resolution:</span> {videoDetail.width}x{videoDetail.height}p

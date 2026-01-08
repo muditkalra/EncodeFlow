@@ -82,14 +82,20 @@ export default function page() {
 			// starting transcoding;
 			const job: TranscodeJobBody = {
 				fileName: video!.name,
-				config: {
+				userId: crypto.randomUUID(),
+				fileType: video!.type,
+				size: video!.size,
+				duration: videoDetail!.duration,
+				width: videoDetail!.width,
+				height: videoDetail!.height,
+				outputConfig: {
 					format: config.format,
 					resolution: config.resolution,
 					includeAudio: config.includeAudio
 				}
 			};
 			const res = await createJobMutation.mutateAsync(job);
-			
+			console.log(res, "res");
 			console.log("finished upload");
 		} catch (error) {
 			console.log("error from try catch", error);
