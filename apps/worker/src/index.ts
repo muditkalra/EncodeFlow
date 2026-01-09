@@ -8,14 +8,32 @@ import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
 import { createFFmpegArgs } from "./ffmpeg";
-import { redisUrl, transcodedBucketName } from "./confit/constants.";
+import { redisUrl, transcodedBucketName } from "./config/constants";
+import { prismaClient } from "@repo/db";
 
 
-function calculateProgress(outTimeMs: number, duration: number) {
+function calculateProgress(outTimeMs: number, duration: number): number {
     if (duration <= 0 || outTimeMs <= 0) return 0;
 
-    // const percentage = Math.floor();
+    const outTime = outTimeMs / 1000000 // converting to seconds
+    const percentage = Math.floor((outTime / duration) * 100);
+    return Math.min(percentage, 99)
+}
 
+
+async function startTranscodingDBNotify(jobId: string) {
+    try {
+        await prismaClient.job.update({
+            where: { id: jobId },
+            data: {
+                status: "PROCESSING",
+                startedAt: new Date(),
+                progress: 1
+            }
+        })
+    } catch (error) {
+        throw new Error("failed to notify db");
+    }
 }
 
 
@@ -29,9 +47,16 @@ async function processVideo(job: { data: VideoTask }) {
 
     let lastProgress = 0; // stores last progress in memory, used for comparing progress.
 
-    // async function updateProgress(params:type) {
+    async function updateProgress(progress: number) {
+        if (progress - lastProgress >= 5) {
+            lastProgress = progress;
 
-    // }
+            await prismaClient.job.update({
+                where: { id: dbJobId },
+                data: { progress }
+            })
+        }
+    }
 
     const dir = path.resolve("tmp");  // tmp folder;
     await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
@@ -63,6 +88,8 @@ async function processVideo(job: { data: VideoTask }) {
 
         // transcoding
         console.log(`[${dbJobId}] Transcoding ...`);
+        await startTranscodingDBNotify(dbJobId); // db notify --> processing started;
+
         await new Promise<void>((resolve, reject) => {
             if (!ffmpegPath) throw new Error("ffmpeg binary not found");
 
@@ -70,17 +97,19 @@ async function processVideo(job: { data: VideoTask }) {
             const ffmpeg = spawn(ffmpegPath, args);
 
             ffmpeg.stderr.on("data", async (chunk) => {
-                console.log(chunk.toString(), "---------logs from ffmpeg----------");
-                // const lines = chunk.toString().split('\n');
+                // console.log(chunk.toString(), "---------logs from ffmpeg----------");
+                const lines = chunk.toString().split('\n');
 
-                // for (const line of lines) {
-                //     if (line.startsWith("out_time_ms")) {
-                //         const outTimeMs = Number(line.split("=")[1]);
-                //         if (!Number.isNaN(outTimeMs)) {
-                //             // const progress = 
-                //         }
-                //     }
-                // }
+                for (const line of lines) {
+                    if (line.startsWith("out_time_ms")) {
+                        const outTimeMs = Number(line.split("=")[1]);
+                        if (!Number.isNaN(outTimeMs)) {
+                            const progress = calculateProgress(outTimeMs, duration);
+                            console.log(progress, "% progress");
+                            await updateProgress(progress); // changing progress, thinking to throttle more like
+                        }
+                    }
+                }
 
             })
 
@@ -106,10 +135,30 @@ async function processVideo(job: { data: VideoTask }) {
 
         console.log(`Done: ${dbJobId}_${fileName}_${resolution}`);
 
-        return { status: "completed", outputUrl: `s3://${transcodedBucketName}/${outputKey}` };
+        const outputUrl = `s3://${transcodedBucketName}/${outputKey}`;
+
+
+        await prismaClient.job.update({
+            where: { id: dbJobId },
+            data: {
+                status: "COMPLETED",
+                finishedAt: new Date(),
+                progress: 100,
+                outputUrl,
+            }
+        })
+
+        return { status: "completed", outputUrl };
     } catch (error) {
         console.error(`[${dbJobId}] failed`, error);
-        throw Error;
+        await prismaClient.job.update({
+            where: { id: dbJobId },
+            data: {
+                status: "FAILED",
+                finishedAt: new Date(),
+                errorMessage: error instanceof Error ? error.message : "Unknown Error"
+            }
+        });
     } finally {
         if (fs.existsSync(localInput)) {
             fs.unlinkSync(localInput);

@@ -25,7 +25,7 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
         }
 
         if (file.size <= 1000 || file.size >= MAX_FILE_SIZE) {
-            toast.error("Size should be more than a 1KB and less than 25MB");
+            toast.error("Size should be more than a 1KB and less than 35MB");
             return;
         }
 
@@ -55,7 +55,7 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
                                 Upload file for Transcoding
                             </div>
                             <div> drag and drop or click to browse</div>
-                            <span className='text-xs'>( file should be less than 25 MB )</span>
+                            <span className='text-xs'>( file should be less than 35 MB )</span>
                         </div>
                     </div>
                     <Button size="sm" variant="outline" className='cursor-pointer'>
