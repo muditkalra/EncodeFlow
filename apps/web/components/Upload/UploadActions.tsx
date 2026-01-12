@@ -21,9 +21,9 @@ export default function UploadActions({ uploadState, disabled, progress, setVide
         return (
             <div className="flex flex-col gap-1 w-full">
                 <div className="text-muted-foreground text-sm text-center">
-                    uploading ...
+                    uploading({progress}%) ...
                 </div>
-                <Progress value={progress}/>
+                <Progress value={progress} />
             </div>
         )
     }

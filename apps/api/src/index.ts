@@ -126,6 +126,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
         return res.status(200).json({
             message: "Transcoding started",
             videoId: video.id,
+            jobId: job.id,
             config: outputConfig
         });
 

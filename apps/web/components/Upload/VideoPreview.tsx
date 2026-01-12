@@ -10,8 +10,8 @@ interface Props {
 export default function VideoPreview({ video, videoDetail }: Props) {
 
     const getFileSizeWithUnit = (size: number): string => {
-        const fileInKb = Math.round(size / 1000);
-        return fileInKb < 1024 ? fileInKb + " KB" : Math.round(fileInKb / 1000) + " MB";
+        const fileInKb = Math.round(size / 1024);
+        return fileInKb < 1024 ? fileInKb + " KB" : Math.round(fileInKb / 1024) + " MB";
     };
 
     return (

@@ -9,7 +9,7 @@ import path from "path";
 import { pipeline } from "stream/promises";
 import { createFFmpegArgs } from "./ffmpeg";
 import { redisUrl, transcodedBucketName } from "./config/constants";
-import { prismaClient } from "@repo/db";
+import { prismaClient, Status } from "@repo/db";
 
 
 function calculateProgress(outTimeMs: number, duration: number): number {
@@ -26,7 +26,7 @@ async function startTranscodingDBNotify(jobId: string) {
         await prismaClient.job.update({
             where: { id: jobId },
             data: {
-                status: "PROCESSING",
+                status: Status.PROCESSING,
                 startedAt: new Date(),
                 progress: 1
             }
@@ -106,7 +106,7 @@ async function processVideo(job: { data: VideoTask }) {
                         if (!Number.isNaN(outTimeMs)) {
                             const progress = calculateProgress(outTimeMs, duration);
                             console.log(progress, "% progress");
-                            await updateProgress(progress); // changing progress, thinking to throttle more like
+                            await updateProgress(progress); // updating progress to db rn, thinking to throttle more or switching to redis alltogether;
                         }
                     }
                 }
@@ -141,7 +141,7 @@ async function processVideo(job: { data: VideoTask }) {
         await prismaClient.job.update({
             where: { id: dbJobId },
             data: {
-                status: "COMPLETED",
+                status: Status.COMPLETED,
                 finishedAt: new Date(),
                 progress: 100,
                 outputUrl,
@@ -154,7 +154,7 @@ async function processVideo(job: { data: VideoTask }) {
         await prismaClient.job.update({
             where: { id: dbJobId },
             data: {
-                status: "FAILED",
+                status: Status.FAILED,
                 finishedAt: new Date(),
                 errorMessage: error instanceof Error ? error.message : "Unknown Error"
             }

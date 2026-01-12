@@ -11,6 +11,7 @@ import { useCallback, useState } from 'react';
 import axios from "axios";
 import { toast } from 'sonner';
 import { TranscodeJobBody } from '@repo/types';
+import ProgressTable from '@/components/Upload/ProgressTable';
 
 
 export default function page() {
@@ -71,6 +72,10 @@ export default function page() {
 	});
 
 	const handleClick = useCallback(async () => {
+		if (!video || !videoDetail) {
+			return;
+		}
+
 		try {
 			// fetching signed Url;
 			setUploadState("FETCHINGURL");
@@ -81,13 +86,13 @@ export default function page() {
 
 			// starting transcoding;
 			const job: TranscodeJobBody = {
-				fileName: video!.name,
+				fileName: video.name,
 				userId: crypto.randomUUID(),
-				fileType: video!.type,
-				size: video!.size,
-				duration: videoDetail!.duration,
-				width: videoDetail!.width,
-				height: videoDetail!.height,
+				fileType: video.type,
+				size: video.size,
+				duration: videoDetail.duration,
+				width: videoDetail.width,
+				height: videoDetail.height,
 				outputConfig: {
 					format: config.format,
 					resolution: config.resolution,
@@ -104,7 +109,7 @@ export default function page() {
 	}, [video, videoDetail]);
 
 	return (
-		<div className="p-4">
+		<div className="p-4 space-y-8">
 			{(!video || !videoDetail) && <UploadDropzone setVideo={setVideo} setVideoDetail={setVideoDetail} />}
 			{(video && videoDetail) &&
 				<Card className=''>
@@ -117,6 +122,7 @@ export default function page() {
 					</CardFooter>
 				</Card>
 			}
+			<ProgressTable />
 		</div>
 	)
 }
