@@ -63,6 +63,8 @@ export default function page() {
 			toast.success("Transcoding started");
 			setUploadState("PROCESSING");
 			console.log("on success of job");
+			setVideo(null);
+			setVideoDetail(null);
 		},
 		onError: (error) => {
 			console.log(error);
@@ -122,7 +124,7 @@ export default function page() {
 					</CardFooter>
 				</Card>
 			}
-			<ProgressTable />
+			<ProgressTable enabled={uploadState == "PROCESSING"} />
 		</div>
 	)
 }

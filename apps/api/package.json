@@ -13,17 +13,19 @@
   "license": "ISC",
   "dependencies": {
     "@repo/bullq": "workspace:*",
-    "@repo/s3": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/s3": "workspace:*",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "@repo/types": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^22.15.3",
     "tsx": "^4.21.0"
   }

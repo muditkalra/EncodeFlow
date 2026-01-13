@@ -1,4 +1,4 @@
-import { Format, VideoResolution } from "@repo/types";
+import { Format, JobStatus, VideoResolution } from "@repo/types";
 
 export interface OutputConfigType {
     format: Format,
@@ -14,3 +14,11 @@ export interface VideoDetail {
     width: number;
     height: number;
 }
+
+export const jobStatusVariantMap: Record<JobStatus, string> = {
+    PENDING: "bg-gray-500",
+    COMPLETED: "",
+    FAILED: "bg-red-500",
+    PROCESSING: "bg-blue-700"
+}
+

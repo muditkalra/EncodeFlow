@@ -6,12 +6,15 @@ import "dotenv/config.js";
 import express, { Request, Response } from "express";
 import { awsS3Region, awsS3TempBucketName, redisUrl } from "./config/constants";
 import { prismaClient } from "@repo/db";
+import morgan from "morgan";
 
 const app = express();
 const port = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
+app.disable('etag');
 
 
 app.get('/health', (req: Request, res: Response) => {
@@ -56,7 +59,6 @@ app.get("/upload-url", async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Failed to generate upload url" });
     }
 })
-
 
 
 // 2. frontend calls this to after putting objects to providing details about file and other things and will trigger transcoding for a particular file;
@@ -134,8 +136,62 @@ app.post("/transcode", async (req: Request, res: Response) => {
         console.log(error);
         return res.status(500).json({ message: "Failed to start transcoding" });
     }
-})
+});
 
+// active jobs(status -> pending, processing) and jobs which got completed and failed in last with 2 min;
+app.get("/jobs/active", async (req: Request, res: Response) => {
+    try {
+        // find all the jobs which are 
+        let twoMinutesAgo = new Date();
+        twoMinutesAgo.setMinutes(twoMinutesAgo.getMinutes() - 5);
+
+        const result = await prismaClient.job.findMany({
+            where: {
+                OR: [
+                    {
+                        status: {
+                            in: ["PENDING", "PROCESSING"]
+                        }
+                    },
+                    {
+                        AND: [
+                            {
+                                status: {
+                                    in: ["COMPLETED", "FAILED"]
+                                }
+                            },
+                            {
+                                finishedAt: {
+                                    gte: twoMinutesAgo
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            select: {
+                id: true,
+                videoId: true,
+                progress: true,
+                status: true,
+                createdAt: true,
+                video: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        })
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ error });
+    }
+})
 
 const start = () => {
     try {
