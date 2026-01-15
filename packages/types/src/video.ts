@@ -1,3 +1,4 @@
+import { type Video } from "@repo/db"
 
 export type VideoResolution = "1080p" | "720p" | "480p" | "360p";
 export const videoResolutions: VideoResolution[] = ["1080p", "720p", "480p", "360p"];
@@ -48,3 +49,5 @@ export interface TranscodeJobBody {
     height: number;
     outputConfig: OutputConfig
 };
+
+export type VideoType = Video;

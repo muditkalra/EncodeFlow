@@ -11,7 +11,7 @@ import { useCallback, useState } from 'react';
 import axios from "axios";
 import { toast } from 'sonner';
 import { TranscodeJobBody } from '@repo/types';
-import ProgressTable from '@/components/Upload/ProgressTable';
+import ActivityFeedTable from '@/components/Upload/ActivityFeedTable';
 
 
 export default function page() {
@@ -20,6 +20,7 @@ export default function page() {
 	const [config, setConfig] = useState<OutputConfigType>({ format: "mp4", resolution: "1080p", includeAudio: true });
 	const [uploadState, setUploadState] = useState<UploadState>("IDLE");
 	const [progress, setProgress] = useState<number>(0);
+	const [tableEnabled, setTableEnabled] = useState<boolean>(false);
 
 
 	const getUploadUrlMutation = useMutation({
@@ -79,6 +80,7 @@ export default function page() {
 		}
 
 		try {
+			setTableEnabled(true);
 			// fetching signed Url;
 			setUploadState("FETCHINGURL");
 			const { url } = await getUploadUrlMutation.mutateAsync();
@@ -102,6 +104,8 @@ export default function page() {
 				}
 			};
 			const res = await createJobMutation.mutateAsync(job);
+			setVideo(null);
+			setVideoDetail(null);
 			console.log(res, "res");
 			console.log("finished upload");
 		} catch (error) {
@@ -124,7 +128,7 @@ export default function page() {
 					</CardFooter>
 				</Card>
 			}
-			<ProgressTable enabled={uploadState == "PROCESSING"} />
+			<ActivityFeedTable enabled={tableEnabled || true} />
 		</div>
 	)
 }

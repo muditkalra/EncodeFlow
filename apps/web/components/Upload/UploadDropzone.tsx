@@ -50,12 +50,12 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
                 <div className="flex flex-col items-center gap-6 justify-center">
                     <div className="flex flex-col gap-2 items-center justify-center">
                         <Cloud className='size-9 p-1 border rounded-lg bg-muted' />
-                        <div className="text-sm text-muted-foreground text-center space-y-1">
+                        <div className="text-sm text-center space-y-1">
                             <div className="">
                                 Upload file for Transcoding
                             </div>
                             <div> drag and drop or click to browse</div>
-                            <span className='text-xs'>( file should be less than 35 MB )</span>
+                            <span className='text-xs text-muted-foreground'>( file should be less than 35 MB )</span>
                         </div>
                     </div>
                     <Button size="sm" variant="outline" className='cursor-pointer'>

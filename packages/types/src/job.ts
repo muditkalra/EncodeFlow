@@ -1,4 +1,4 @@
-import { Status } from "@repo/db";
+import { type Job, Status } from "@repo/db";
 
 export interface ActiveJob {
     jobId: string,
@@ -12,3 +12,5 @@ export interface ActiveJob {
 }
 
 export type JobStatus = Status;
+
+export type JobType = Job

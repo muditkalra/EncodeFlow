@@ -59,7 +59,7 @@ export default function AppSideBar() {
 							<Link href={"/"}>
 								{/* <Logo size={110} /> */}
 								{/* <Image src="/logo3.png" alt='logo' width={100} height={100} /> */}
-								<span>video transcoder</span>
+								<span>video transcoder icon</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

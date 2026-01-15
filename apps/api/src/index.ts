@@ -143,21 +143,21 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     try {
         // find all the jobs which are 
         let twoMinutesAgo = new Date();
-        twoMinutesAgo.setMinutes(twoMinutesAgo.getMinutes() - 5);
+        twoMinutesAgo.setMinutes(twoMinutesAgo.getMinutes() - 2);
 
         const result = await prismaClient.job.findMany({
             where: {
                 OR: [
                     {
                         status: {
-                            in: ["PENDING", "PROCESSING"]
+                            in: ["PROCESSING"]
                         }
                     },
                     {
                         AND: [
                             {
                                 status: {
-                                    in: ["COMPLETED", "FAILED"]
+                                    in: ["COMPLETED", "FAILED", "PENDING"]
                                 }
                             },
                             {
@@ -190,6 +190,23 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         return res.status(400).json({ error });
+    }
+})
+
+app.get("/videos", async (req: Request, res: Response) => {
+    try {
+        const alljobs = await prismaClient.job.findMany({
+            include: {
+                video: true
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        })
+        return res.status(200).json(alljobs);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
     }
 })
 

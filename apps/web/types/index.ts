@@ -15,10 +15,12 @@ export interface VideoDetail {
     height: number;
 }
 
-export const jobStatusVariantMap: Record<JobStatus, string> = {
-    PENDING: "bg-gray-500",
-    COMPLETED: "",
-    FAILED: "bg-red-500",
-    PROCESSING: "bg-blue-700"
+export const jobStatusBadgeColor: Record<JobStatus, string> = {
+    PENDING: "bg-transparent border-gray-500/60",
+    COMPLETED: "bg-primary/40 border-primary",
+    FAILED: "bg-red-500/40 border-red-500",
+    PROCESSING: "bg-blue-700/40 border-blue-600"
 }
+
+// border, text-white/70, lowercase
 

@@ -20,7 +20,7 @@ export default async function RootLayout({
             <div className="flex">
                 <SidebarProvider defaultOpen={defaultOpen}>
                     <AppSideBar />
-                    <main className="w-full">
+                    <main className="overflow-hidden w-full">
                         <DashboardNavbar />
                         <div className="">
                             {children}
