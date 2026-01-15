@@ -3,22 +3,40 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, ColumnFiltersState, getFilteredRowModel } from "@tanstack/react-table"
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[],
+    loading: boolean
 }
 
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, loading }: DataTableProps<TData, TValue>) {
 
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+    data = useMemo(() => (
+        loading ? Array(15).fill({}) : data),
+        [loading, data]
+    );
+    columns = useMemo(
+        () =>
+            loading
+                ? columns.map((column) => ({
+                    ...column,
+                    cell: () => (
+                        <Skeleton className="h-5 w-4/5 rounded-sm" />
+                    ),
+                }))
+                : columns,
+        [loading]
+    );
 
     const table = useReactTable({
         data,
@@ -38,7 +56,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
 
     return (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2.5 mb-5">
             <div className="flex justify-end gap-3">
                 <Input
                     placeholder="Search Filename"
@@ -99,6 +117,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className="h-12"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>

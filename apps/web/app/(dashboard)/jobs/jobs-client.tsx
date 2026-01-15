@@ -12,15 +12,14 @@ type ColDef = JobType & {
 }
 
 export default function JobsClient() {
-    const { data } = useQuery<ColDef[]>({
+    const { data, isLoading } = useQuery<ColDef[]>({
         queryKey: ["alljobs"],
         queryFn: () => axios.get(`${API_URL}/videos`).then(res => res.data),
         refetchInterval: 30_000, // 👈 polling every 30s
     });
 
-    console.log(data);
 
     return (
-        <DataTable columns={columns} data={data || []} />
+        <DataTable columns={columns} data={data || []} loading={isLoading} />
     )
 }
