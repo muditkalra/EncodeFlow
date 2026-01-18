@@ -89,19 +89,17 @@ export default function page() {
 			await uploadFile(url);
 
 			// starting transcoding;
+			const { duration, height, width } = videoDetail;
+			const { format, includeAudio, resolution } = config;
 			const job: TranscodeJobBody = {
 				fileName: video.name,
-				userId: crypto.randomUUID(),
+				userId: crypto.randomUUID(), // need to replace with clerk id;
 				fileType: video.type,
 				size: video.size,
-				duration: videoDetail.duration,
-				width: videoDetail.width,
-				height: videoDetail.height,
-				outputConfig: {
-					format: config.format,
-					resolution: config.resolution,
-					includeAudio: config.includeAudio
-				}
+				duration,
+				width,
+				height,
+				outputConfig: { format, resolution, includeAudio }
 			};
 			const res = await createJobMutation.mutateAsync(job);
 			setVideo(null);
@@ -128,7 +126,7 @@ export default function page() {
 					</CardFooter>
 				</Card>
 			}
-			<ActivityFeedTable enabled={tableEnabled || true} />
+			<ActivityFeedTable enabled={tableEnabled} />
 		</div>
 	)
 }

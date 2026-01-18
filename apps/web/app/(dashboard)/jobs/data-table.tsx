@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -20,6 +20,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({ columns, data, loading }: DataTableProps<TData, TValue>) {
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [sorting, setSorting] = useState<SortingState>([]);
 
     data = useMemo(() => (
         loading ? Array(15).fill({}) : data),
@@ -44,13 +45,22 @@ export function DataTable<TData, TValue>({ columns, data, loading }: DataTablePr
         getCoreRowModel: getCoreRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
         // getPaginationRowModel: getPaginationRowModel(),
-        // onSortingChange: setSorting,
-        // getSortedRowModel: getSortedRowModel(),
         // onRowSelectionChange: setRowSelection,
+        initialState: {
+            columnVisibility: {
+                filetype: false,
+                errorMessage: false,
+                outputFormat: false,
+                outputResolution: false,
+                includeAudio: false,
+            }
+        },
         state: {
-            columnFilters
-            // sorting,
+            columnFilters,
+            sorting
         },
     });
 

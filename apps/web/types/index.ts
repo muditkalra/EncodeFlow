@@ -22,5 +22,3 @@ export const jobStatusBadgeColor: Record<JobStatus, string> = {
     PROCESSING: "bg-blue-700/40 border-blue-600"
 }
 
-// border, text-white/70, lowercase
-

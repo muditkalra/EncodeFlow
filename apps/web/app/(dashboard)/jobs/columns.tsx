@@ -1,12 +1,17 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import type { JobType, VideoType } from "@repo/types"
+import JobDetails from "@/components/JobDetails";
 import { Badge } from "@/components/ui/badge";
-import { jobStatusBadgeColor } from "@/types";
-import { type JobStatus } from "@repo/types"
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { jobStatusBadgeColor } from "@/types";
+import { getRelativeTime, getTimediff } from "@/utils/datetime";
+import type { JobType, OutputConfig, VideoType } from "@repo/types";
+import { type JobStatus } from "@repo/types";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, CheckCircle2, CircleX } from "lucide-react";
 
 type ColDef = JobType & {
     video: VideoType
@@ -52,16 +57,25 @@ export const columns: ColumnDef<ColDef>[] = [
     },
     {
         id: "processing_time",
-        header: "Processing Time",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant={"ghost"}
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Processing Time
+                    <ArrowUpDown className="ml-2" />
+                </Button>
+            )
+        },
         accessorFn: (row) => {
-            if (row.finishedAt && row.startedAt) {
-                return new Date(row.finishedAt).getTime() - new Date(row.startedAt).getTime();
+            if (!row.finishedAt || !row.startedAt) {
+                return null;
             }
-            return null;
+            return getTimediff(row.finishedAt, row.startedAt);
         },
         cell: ({ getValue }) => {
-            const milliseconds = getValue() as number | null;
-
+            const milliseconds = getValue<number | null>();
             if (!milliseconds) return "-";
 
             const seconds = Math.floor(milliseconds / 1000);
@@ -89,19 +103,71 @@ export const columns: ColumnDef<ColDef>[] = [
         }
     },
     {
+        id: "outputFormat",
+        header: "Output Format",
+        accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
+        cell: ({ getValue }) => (getValue() as OutputConfig).format
+
+    },
+    {
+        id: "outputResolution",
+        header: "Output Resolution",
+        accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
+        cell: ({ getValue }) => (getValue() as OutputConfig).resolution
+
+    },
+    {
+        id: "includeAudio",
+        header: "Include Audio",
+        accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
+        cell: ({ getValue }) => {
+            const value = (getValue() as OutputConfig).includeAudio;
+            return (
+                value ?
+                    <CheckCircle2 className="size-5 text-green-500/50" />
+                    :
+                    <CircleX className="size-5 text-red-500/50" />
+            )
+        }
+    },
+    {
         accessorKey: "createdAt",
-        header: "Created At",
-        cell: ({ getValue }) => ((getValue() as Date).toLocaleString("en-IN"))
+        header: ({ column }) => {
+            return (
+                <Button variant={"ghost"} onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Created At
+                    <ArrowUpDown className="ml-2" />
+                </Button>
+            )
+        },
+        cell: ({ getValue }) => {
+            return (
+                <div title={getValue<Date>().toLocaleString("en-IN")}>
+                    {getRelativeTime(getValue<Date>())}
+                </div>
+            )
+        },
     },
     {
         accessorKey: "errorMessage",
-        header: "Error",
+        header: "Error Message",
         cell: ({ getValue }) => (getValue() || "-"),
     },
-    // {
-    //     accessorKey: "errorMessag",
-    //     header: "Error",
-    //     cell: ({ getValue }) => (getValue() || "-")
-    // },
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const rowData = row.original;
+            return (
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant={"ghost"}>
+                            More details
+                        </Button>
+                    </SheetTrigger>
+                    <JobDetails />
+                </Sheet>
+            )
 
+        }
+    }
 ]

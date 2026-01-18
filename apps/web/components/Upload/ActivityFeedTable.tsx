@@ -9,22 +9,12 @@ export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
 
     const { data } = useQuery<ActiveJob[]>({
         queryKey: ["active-jobs"],
-        // queryFn: () => axios.get(`${API_URL}/jobs/active`).then(res => res.data),
-        queryFn: () => [{
-            createdAt: new Date().toISOString(),
-            jobId:"121",
-            progress:20,
-            status:"FAILED",
-            video:{
-                name:"video.mp4"
-            },
-            videoId:"3232"
-        }],
+        queryFn: () => axios.get(`${API_URL}/jobs/active`).then(res => res.data),
         refetchInterval: 1000, //every second
         enabled
     })
 
-    if (!enabled) {
+    if (!enabled || !data) {
         return;
     }
 
@@ -41,7 +31,9 @@ export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {data?.map((job, id) => <ActivityFeedRow key={id} job={job} />)}
+                {data.map((job, id) =>
+                    <ActivityFeedRow key={id} job={job} />
+                )}
             </TableBody>
         </Table>
     )
