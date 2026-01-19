@@ -1,27 +1,24 @@
 "use client";
+import { ColumnType } from '@/types';
 import { API_URL } from '@/utils/constants';
-import { JobType, VideoType } from '@repo/types';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import React from 'react'
-import { DataTable } from './data-table';
 import { columns } from './columns';
+import { DataTable } from './data-table';
 
-type ColDef = JobType & {
-    video: VideoType
-}
+type ColDef = ColumnType;
 
 const dummyData: ColDef[] = [
     {
         "id": "ee5f6d11-26fa-414f-808a-8ef55e0c3365",
         "videoId": "e035439c-cd81-44bd-8765-93918c5c3582",
-        "status": "COMPLETED",
-        "progress": 100,
+        "status": "PROCESSING",
+        "progress": 70,
         "outputConfig": "{\"format\":\"mp4\",\"resolution\":\"1080p\",\"includeAudio\":true}",
         "outputUrl": "s3://video-transcoder-transcoded-bucket/ee5f6d11-26fa-414f-808a-8ef55e0c3365.mp4",
         "errorMessage": null,
         "startedAt": new Date("2026-01-14T06:33:30.837Z"),
-        "finishedAt": new Date("2026-01-14T06:33:41.595Z"),
+        "finishedAt": null,
         "createdAt": new Date("2026-01-14T06:33:27.775Z"),
         "updatedAt": new Date("2026-01-14T06:33:41.596Z"),
         "video": {
@@ -243,7 +240,7 @@ export default function JobsClient() {
     const { data, isLoading } = useQuery<ColDef[]>({
         queryKey: ["alljobs"],
         queryFn: () => axios.get(`${API_URL}/videos`).then(res => res.data),
-        refetchInterval: 30_000, // polling every 30s
+        refetchInterval: 60_000, // polling every minute
     });
 
 

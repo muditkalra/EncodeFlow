@@ -5,13 +5,14 @@ import OutputConfig from '@/components/Upload/OutputConfig';
 import UploadActions from '@/components/Upload/UploadActions';
 import UploadDropzone from '@/components/Upload/UploadDropzone';
 import VideoPreview from '@/components/Upload/VideoPreview';
-import { OutputConfigType, UploadState, VideoDetail } from '@/types';
+import { UploadState, VideoDetail } from '@/types';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import axios from "axios";
 import { toast } from 'sonner';
-import { TranscodeJobBody } from '@repo/types';
+import { TranscodeJobBody, OutputConfigType } from '@repo/types';
 import ActivityFeedTable from '@/components/Upload/ActivityFeedTable';
+import { API_URL } from '@/utils';
 
 
 export default function page() {
@@ -24,7 +25,7 @@ export default function page() {
 
 
 	const getUploadUrlMutation = useMutation({
-		mutationFn: () => axios.get(`${process.env.NEXT_PUBLIC_API_URL}/upload-url`, {
+		mutationFn: () => axios.get(`${API_URL}/upload-url`, {
 			params: {
 				"video-title": video?.name,
 				"format": video?.type
@@ -59,7 +60,7 @@ export default function page() {
 
 	const createJobMutation = useMutation({
 		mutationFn: (payload: TranscodeJobBody) =>
-			axios.post(`${process.env.NEXT_PUBLIC_API_URL}/transcode`, payload).then(res => res.data),
+			axios.post(`${API_URL}/transcode`, payload).then(res => res.data),
 		onSuccess: () => {
 			toast.success("Transcoding started");
 			setUploadState("PROCESSING");

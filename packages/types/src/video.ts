@@ -21,7 +21,7 @@ export interface VideoTask {
     duration: number;
     bucketName: string;
     fileName: string;
-    outputConfig: OutputConfig
+    outputConfig: OutputConfigType
 };
 
 export const resolutionMap: Record<VideoResolution, string> = {
@@ -32,7 +32,7 @@ export const resolutionMap: Record<VideoResolution, string> = {
 }
 
 
-export interface OutputConfig {
+export interface OutputConfigType {
     format: Format;
     resolution: VideoResolution;
     includeAudio: boolean;
@@ -47,7 +47,7 @@ export interface TranscodeJobBody {
     duration: number;
     width: number;
     height: number;
-    outputConfig: OutputConfig
+    outputConfig: OutputConfigType
 };
 
 export type VideoType = Video;

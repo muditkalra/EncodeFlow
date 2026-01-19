@@ -1,21 +1,18 @@
 "use client";
 
 import JobDetails from "@/components/JobDetails";
-import { Badge } from "@/components/ui/badge";
+import JobStatusBadge from "@/components/JobStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import { jobStatusBadgeColor } from "@/types";
-import { getRelativeTime, getTimediff } from "@/utils/datetime";
-import type { JobType, OutputConfig, VideoType } from "@repo/types";
+import { ColumnType } from "@/types";
+import { calculateProcessingTime, getRelativeTime, getTimediff } from "@/utils";
+import type { OutputConfigType } from "@repo/types";
 import { type JobStatus } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, CheckCircle2, CircleX } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, CircleX } from "lucide-react";
 
-type ColDef = JobType & {
-    video: VideoType
-}
+type ColDef = ColumnType;
 
 export const columns: ColumnDef<ColDef>[] = [
     {
@@ -47,11 +44,8 @@ export const columns: ColumnDef<ColDef>[] = [
         header: "Status",
         cell: ({ row }) => {
             const value = row.getValue("status") as JobStatus;
-            const jobStatusColor = jobStatusBadgeColor[value]
             return (
-                <Badge className={cn("border text-neutral-200", jobStatusColor)}>
-                    {value}
-                </Badge>
+                <JobStatusBadge value={value} />
             )
         }
     },
@@ -74,46 +68,29 @@ export const columns: ColumnDef<ColDef>[] = [
             }
             return getTimediff(row.finishedAt, row.startedAt);
         },
-        cell: ({ getValue }) => {
-            const milliseconds = getValue<number | null>();
-            if (!milliseconds) return "-";
-
-            const seconds = Math.floor(milliseconds / 1000);
-            const minutes = Math.floor(seconds / 60);
-
-            // Format based on duration
-            if (minutes > 0) {
-                return `${minutes}m ${seconds % 60}s`;
-            } else if (seconds > 0) {
-                return `${seconds}s`;
-            } else {
-                return `${milliseconds}ms`;
-            }
+        cell: ({ row }) => {
+            const startTime = row.original.startedAt;
+            const endTime = row.original.finishedAt;
+            const time = calculateProcessingTime(endTime, startTime);
+            return time;
         }
     },
     {
         accessorKey: "progress",
         header: "Progress %",
-        cell: ({ getValue }) => {
-            return (
-                <div className="">
-                    {getValue() as number}
-                </div>
-            )
-        }
     },
     {
         id: "outputFormat",
         header: "Output Format",
         accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
-        cell: ({ getValue }) => (getValue() as OutputConfig).format
+        cell: ({ getValue }) => (getValue() as OutputConfigType).format
 
     },
     {
         id: "outputResolution",
         header: "Output Resolution",
         accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
-        cell: ({ getValue }) => (getValue() as OutputConfig).resolution
+        cell: ({ getValue }) => (getValue() as OutputConfigType).resolution
 
     },
     {
@@ -121,7 +98,7 @@ export const columns: ColumnDef<ColDef>[] = [
         header: "Include Audio",
         accessorFn: ({ outputConfig }) => JSON.parse(outputConfig as string),
         cell: ({ getValue }) => {
-            const value = (getValue() as OutputConfig).includeAudio;
+            const value = (getValue() as OutputConfigType).includeAudio;
             return (
                 value ?
                     <CheckCircle2 className="size-5 text-green-500/50" />
@@ -133,10 +110,15 @@ export const columns: ColumnDef<ColDef>[] = [
     {
         accessorKey: "createdAt",
         header: ({ column }) => {
+            // column.sort
             return (
                 <Button variant={"ghost"} onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     Created At
-                    <ArrowUpDown className="ml-2" />
+                    {column.getIsSorted() === "asc" ?
+                        <ArrowUp className="ml-2" />
+                        :
+                        <ArrowDown className="ml-2" />
+                    }
                 </Button>
             )
         },
@@ -164,7 +146,7 @@ export const columns: ColumnDef<ColDef>[] = [
                             More details
                         </Button>
                     </SheetTrigger>
-                    <JobDetails />
+                    <JobDetails job={rowData} />
                 </Sheet>
             )
 

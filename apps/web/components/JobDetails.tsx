@@ -1,58 +1,167 @@
 "use client";
 
-import { SheetContent, SheetDescription, SheetHeader, SheetTitle, } from './ui/sheet'
+import { ColumnType } from '@/types';
+import { calculateProcessingTime, formatTime, getFileSizeWithUnit } from '@/utils';
+import { OutputConfigType } from '@repo/types';
+import { CheckCircle2, CircleX, Download, FileVideoCamera } from 'lucide-react';
+import JobStatusBadge from './JobStatusBadge';
+import { Button } from './ui/button';
+import { ScrollArea } from './ui/scroll-area';
+import { Separator } from './ui/separator';
+import { SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from './ui/sheet';
 
-export default function JobDetails() {
+interface JobsDetailsProps {
+    job: ColumnType
+}
+
+export default function JobDetails({ job }: JobsDetailsProps) {
+
+    const { format, includeAudio, resolution } = JSON.parse(job.outputConfig as string) as OutputConfigType;
+
     return (
-        <SheetContent>
+        <SheetContent className='gap-0'>
             <SheetHeader>
-                <SheetTitle>Jobs Details</SheetTitle>
-                <SheetDescription>
-                    Find the details related to this transcoding Job.
-                </SheetDescription>
+                <SheetTitle className='sr-only'>
+                    Jobs Details
+                </SheetTitle>
+                <div className="flex gap-2">
+                    <FileVideoCamera className='size-7' />
+                    <div className="flex gap-2">
+                        {job.video.name}
+                    </div>
+                </div>
             </SheetHeader>
-            <div className="">
-                {/* output-config */}
-                <div className="">
-                    <div className="">
-                        Output format
+            <ScrollArea className='h-[65vh] mt-4'>
+                <div className="px-4 flex flex-col gap-6">
+                    {/* file status and progress */}
+                    <div className="flex justify-between">
+                        <div className="flex flex-col gap-2">
+                            <div className="text-muted-foreground text-sm">
+                                Status
+                            </div>
+                            <div className="">
+                                <JobStatusBadge value={job.status} />
+                            </div>
+                        </div>
+
+                        <div className={"flex flex-col gap-2 items-center"}>
+                            <div className="text-muted-foreground text-sm">
+                                Progress %
+                            </div>
+                            <div className="">
+                                {job.progress}
+                            </div>
+                        </div>
+
+                        <div className={"flex flex-col gap-2 items-center"}>
+                            <div className="text-muted-foreground text-sm">
+                                Processing Time
+                            </div>
+                            <div className="">
+                                {calculateProcessingTime(job.finishedAt, job.startedAt)}
+                            </div>
+                        </div>
                     </div>
-                    <div className="">
-                        "value of output-format"
+
+                    {/* error message */}
+                    {job.status == "FAILED" &&
+                        <div className='flex flex-col gap-2'>
+                            <div className="text-muted-foreground text-sm">
+                                Error
+                            </div>
+                            <div className="">
+                                {"Error while transcoding"}
+                            </div>
+                        </div>
+                    }
+
+                    <Separator />
+
+                    {/* output config */}
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            Output Config
+                        </div>
+                        <div className="grid grid-cols-2 text-sm space-y-4">
+                            <div className="text-muted-foreground">
+                                Format
+                            </div>
+                            <div className="">
+                                {format}
+                            </div>
+                            <div className="text-muted-foreground">
+                                Resolution
+                            </div>
+                            <div className="">
+                                {resolution}
+                            </div>
+                            <div className="text-muted-foreground">
+                                Include Audio
+                            </div>
+                            <div className="">
+                                {includeAudio ?
+                                    <CheckCircle2 className="size-5 text-green-700" />
+                                    :
+                                    <CircleX className="size-5 text-red-800" />
+                                }
+                            </div>
+                        </div>
+                        {/* <Button variant={"outline"}>
+                            Download Output
+                        </Button> */}
+                    </div>
+
+                    <Separator />
+
+                    {/* input file details */}
+                    <div className="flex flex-col gap-4">
+                        <div className="">
+                            Input video
+                        </div>
+                        <div className="grid grid-cols-2 text-sm space-y-4">
+                            <div className="text-muted-foreground">
+                                FileType
+                            </div>
+                            <div className="tracking-wide">
+                                {job.video.fileType}
+                            </div>
+                            <div className="text-muted-foreground text-sm">
+                                Size
+                            </div>
+                            <div className="">
+                                {getFileSizeWithUnit(job.video.size)}
+                            </div>
+                            <div className="text-muted-foreground text-sm">
+                                Duration
+                            </div>
+                            <div className="">
+                                {formatTime(job.video.duration * 1000)}
+                            </div>
+                            <div className="text-muted-foreground text-sm">
+                                Resolution (w : h)
+                            </div>
+                            <div className="">
+                                {job.video.width} x {job.video.height}p
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="">
-                    <div className="">
-                        output resolution
-                    </div>
-                    <div className="">
-                        "value of resolution"
-                    </div>
+            </ScrollArea>
+            <SheetFooter>
+                <div className="grid grid-cols-2 gap-2">
+                    <Button variant={"secondary"}>
+                        Original<Download />
+                    </Button>
+                    <Button variant={"default"} disabled={job.status !== "COMPLETED"}>
+                        Output <Download />
+                    </Button>
                 </div>
-                <div className="">
-                    <div className="">
-                        include audio
-                    </div>
-                    <div className="">
-                        "value of include audio"
-                    </div>
-                </div>
-            </div>
-            <div className="">
-                {/* error message if any */}
-                <div className="">
-                    Error message
-                </div>
-                <div className="">
-                    "value of error-message"
-                </div>
-            </div>
-            {/* output url if there */}
-            <div className="">
-                <div className="">
-                    Output url download button
-                </div>
-            </div>
+                <SheetClose asChild>
+                    <Button variant={"outline"}>
+                        Close
+                    </Button>
+                </SheetClose>
+            </SheetFooter>
         </SheetContent>
     )
 }

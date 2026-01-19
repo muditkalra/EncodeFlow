@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
-import { MAX_FILE_SIZE } from '@/utils/constants';
+import { MAX_FILE_SIZE } from '@/utils';
 
 interface Props {
     setVideo: Dispatch<SetStateAction<File | null>>;

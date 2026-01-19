@@ -1,6 +1,6 @@
 // "use client";
-import { OutputConfigType, UploadState } from '@/types'
-import { type Format, type VideoResolution, formats, videoResolutions } from "@repo/types"
+import { UploadState } from '@/types'
+import { type Format, type OutputConfigType, type VideoResolution, formats, videoResolutions } from "@repo/types"
 import { Dispatch, SetStateAction } from 'react'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'

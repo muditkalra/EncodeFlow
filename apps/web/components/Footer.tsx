@@ -1,4 +1,4 @@
-import { XIcon } from '@/utils/SvgIcon'
+import { XIcon } from '@/utils'
 import { Github, Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from './ui/button'

@@ -1,6 +1,5 @@
-import React from 'react'
-import { Card, CardContent } from '../ui/card'
 import { VideoDetail } from '@/types';
+import { getFileSizeWithUnit } from '@/utils';
 
 interface Props {
     video: File;
@@ -8,11 +7,6 @@ interface Props {
 }
 
 export default function VideoPreview({ video, videoDetail }: Props) {
-
-    const getFileSizeWithUnit = (size: number): string => {
-        const fileInKb = Math.round(size / 1024);
-        return fileInKb < 1024 ? fileInKb + " KB" : Math.round(fileInKb / 1024) + " MB";
-    };
 
     return (
         <div className='space-y-4'>
