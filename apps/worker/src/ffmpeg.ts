@@ -1,7 +1,7 @@
-import { formatDefaults, OutputConfig, resolutionMap } from "@repo/types";
+import { formatDefaults, OutputConfigType, resolutionMap } from "@repo/types";
 
 
-export function createFFmpegArgs(inputPath: string, config: OutputConfig, outputPath: string): string[] {
+export function createFFmpegArgs(inputPath: string, config: OutputConfigType, outputPath: string): string[] {
     const { format, includeAudio, resolution } = config;
     const args = [
         "-i", inputPath,

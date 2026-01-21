@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({ columns, data, loading }: DataTablePr
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    No result
                                 </TableCell>
                             </TableRow>
                         )}

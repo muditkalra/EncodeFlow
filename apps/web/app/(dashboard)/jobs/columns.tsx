@@ -110,7 +110,6 @@ export const columns: ColumnDef<ColDef>[] = [
     {
         accessorKey: "createdAt",
         header: ({ column }) => {
-            // column.sort
             return (
                 <Button variant={"ghost"} onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     Created At
@@ -124,7 +123,7 @@ export const columns: ColumnDef<ColDef>[] = [
         },
         cell: ({ getValue }) => {
             return (
-                <div title={getValue<Date>().toLocaleString("en-IN")}>
+                <div title={new Date(getValue<Date>()).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short" })}>
                     {getRelativeTime(getValue<Date>())}
                 </div>
             )

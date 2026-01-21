@@ -42,10 +42,10 @@ async function startTranscodingDBNotify(jobId: string) {
 const s3Client = createClient("ap-south-1");
 
 async function processVideo(job: { data: VideoTask }) {
-    // here id is db-jobId, not just bullmq-id;
+    // here id is db-jobId and bullmq-id;
     const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution }, videoId } = job.data;
 
-    let lastProgress = 0; // stores last progress in memory, used for comparing progress.
+    let lastProgress = 0; // storing last progress in memory, used for comparing progress.
 
     async function updateProgress(progress: number) {
         if (progress - lastProgress >= 5) {

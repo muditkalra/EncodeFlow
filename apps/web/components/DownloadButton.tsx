@@ -17,11 +17,23 @@ type DownloadButtonProps = React.ComponentProps<"button"> &
 
 export default function DownloadButton({ className, children, disabled, buttonType, url, variant = "default", size = "default" }: DownloadButtonProps) {
 
-    const [isDownloading, setIsDownloading] = useState<boolean>(false);
-
     const createDownloadUrl = useMutation({
-        mutationFn: () =>
-            axios.post(`${API_URL}/download-file-url`, { url, bucket: buttonType }).then(res => res.data),
+        mutationFn: async () => {
+            const startTime = Date.now();
+            const response = await axios.post(`${API_URL}/download-file-url`, { url, bucket: buttonType });
+
+            const elapsed = Date.now() - startTime;
+            const miniDuration = 500 // 500ms to show loading;
+
+            if (elapsed < miniDuration) { // artificially slowing response as this query is being executed in (1-5)ms and ui looking flashy;
+                await new Promise((resolve) => setTimeout(resolve, miniDuration - elapsed));
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+
+        },
         onError: (error) => {
             toast.error(error.message);
             console.log(error);
@@ -31,24 +43,21 @@ export default function DownloadButton({ className, children, disabled, buttonTy
     const downloadFile = async () => {
         if (!url) return;
 
-        setIsDownloading(true);
+
         try {
-            const { signedUrl } = await createDownloadUrl.mutateAsync();
+            const { signedUrl } = (await createDownloadUrl.mutateAsync()) as { signedUrl: string };
             window.location.href = signedUrl;
-            toast.success("Downloading successfull");
         } catch (error) {
             console.log(error);
             toast.error("Failed to download file");
-        } finally {
-            setIsDownloading(false);
         }
     };
 
 
     return (
-        <Button variant={"secondary"} className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} disabled={disabled || isDownloading} onClick={downloadFile}>
+        <Button variant={"secondary"} className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} disabled={disabled || createDownloadUrl.isPending} onClick={downloadFile}>
             {children}
-            {isDownloading ? <Loader className='animate-spin' /> : <Download />}
+            {createDownloadUrl.isPending ? <Loader className='animate-spin' /> : <Download />}
         </Button>
 
     )
