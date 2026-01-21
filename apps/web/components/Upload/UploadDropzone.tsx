@@ -42,9 +42,9 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
     return (
         <Card className='cursor-pointer'
             onClick={() => inputRef.current?.click()}
-            onDragEnter={(e) => { e.preventDefault() }}
+            onDragEnter={(e) => e.preventDefault()}
             onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files) }}
+            onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files); }}
         >
             <CardContent>
                 <div className="flex flex-col items-center gap-6 justify-center">

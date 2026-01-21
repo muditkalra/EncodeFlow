@@ -3,7 +3,8 @@
 import { ColumnType } from '@/types';
 import { calculateProcessingTime, formatTime, getFileSizeWithUnit } from '@/utils';
 import { OutputConfigType } from '@repo/types';
-import { CheckCircle2, CircleX, Download, FileVideoCamera } from 'lucide-react';
+import { CheckCircle2, CircleX, FileVideoCamera } from 'lucide-react';
+import DownloadButton from './DownloadButton';
 import JobStatusBadge from './JobStatusBadge';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
@@ -31,6 +32,7 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                     </div>
                 </div>
             </SheetHeader>
+
             <ScrollArea className='h-[65vh] mt-4'>
                 <div className="px-4 flex flex-col gap-6">
                     {/* file status and progress */}
@@ -106,9 +108,6 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                 }
                             </div>
                         </div>
-                        {/* <Button variant={"outline"}>
-                            Download Output
-                        </Button> */}
                     </div>
 
                     <Separator />
@@ -147,14 +146,15 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                     </div>
                 </div>
             </ScrollArea>
+
             <SheetFooter>
                 <div className="grid grid-cols-2 gap-2">
-                    <Button variant={"secondary"}>
-                        Original<Download />
-                    </Button>
-                    <Button variant={"default"} disabled={job.status !== "COMPLETED"}>
-                        Output <Download />
-                    </Button>
+                    <DownloadButton variant={"secondary"} buttonType={'original'} url={job.video.originalUrl}>
+                        Original
+                    </DownloadButton>
+                    <DownloadButton buttonType={'output'} disabled={job.status !== "COMPLETED"} url={job.outputUrl}>
+                        Output
+                    </DownloadButton>
                 </div>
                 <SheetClose asChild>
                     <Button variant={"outline"}>

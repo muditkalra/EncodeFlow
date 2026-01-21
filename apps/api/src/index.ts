@@ -1,12 +1,13 @@
 import { createQueue } from "@repo/bullq";
-import { createClient, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { type TranscodeJobBody, videoResolutions, type VideoTask } from "@repo/types";
+import { prismaClient } from "@repo/db";
+import { createClient, GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
+import { type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
-import { awsS3Region, awsS3TempBucketName, redisUrl } from "./config/constants";
-import { prismaClient } from "@repo/db";
 import morgan from "morgan";
+import { awsS3Region, awsS3TempBucketName, redisUrl, transcodedBucketName } from "./config/constants";
+import { parseS3Url } from "./utils";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -71,8 +72,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
         await s3Client.send(command); // if not found will throw error;
 
         // creating video entry in db;
-        // const videoId = crypto.randomUUID(); // need to replace with actual db id;
-        const orgUrl = `s3://${awsS3TempBucketName}/${data.fileName}`
+        const originalUrl = `s3://${awsS3TempBucketName}/${data.fileName}`
         const video = await prismaClient.video.create({
             data: {
                 name: data.fileName,
@@ -82,7 +82,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
                 duration: data.duration,
                 width: data.width,
                 height: data.height,
-                originalUrl: orgUrl,
+                originalUrl,
             },
         });
 
@@ -209,6 +209,33 @@ app.get("/videos", async (req: Request, res: Response) => {
         return res.status(400).json(error);
     }
 })
+
+// getting download url for the 
+app.post('/download-file-url', async (req: Request, res: Response) => {
+    try {
+        const { url, bucket } = req.body as { url: string, bucket: "original" | "output" };
+
+        let key = parseS3Url(url, transcodedBucketName); // getting filename from url;
+        let bucketName = transcodedBucketName;
+        if (bucket == "original") {
+            key = parseS3Url(url, awsS3TempBucketName);
+            bucketName = awsS3TempBucketName;
+        }
+
+        const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: key,
+            ResponseContentDisposition: `attachment; filename="${key}"`,
+            ResponseContentType: 'application/octet-stream'
+        })
+
+        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
+        return res.status(200).json({ signedUrl });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
+    }
+});
 
 const start = () => {
     try {
