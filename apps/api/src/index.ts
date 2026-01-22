@@ -6,8 +6,9 @@ import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
-import { awsS3Region, awsS3TempBucketName, redisUrl, transcodedBucketName } from "./config/constants";
+import { awsS3Region, awsS3TempBucketName, redisUrl, transcodedBucketName, transcodingQName } from "./config/constants";
 import { parseS3Url } from "./utils";
+import queueEventsListeners from "./events";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -16,7 +17,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.disable('etag');
-
 
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
@@ -28,7 +28,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 const s3Client = createClient(awsS3Region);
-const videoQueue = createQueue("transcoding-q", redisUrl);
+const videoQueue = createQueue(transcodingQName, redisUrl);
 
 
 // 1. frontend call this to get signed url to put objects in s3;
@@ -103,7 +103,7 @@ app.post("/transcode", async (req: Request, res: Response) => {
             outputConfig: outputConfig
         }
 
-        await videoQueue.add("transcode", videoTask)
+        await videoQueue.add("transcode", videoTask, { jobId: job.id });
 
         // multiple format jobs queue;
         // for (const resolution of videoResolutions) {  // all the possible formats
@@ -240,7 +240,8 @@ app.post('/download-file-url', async (req: Request, res: Response) => {
 const start = () => {
     try {
         app.listen(port, () => {
-            console.log(`api-service are running on: http://localhost:${port}`)
+            console.log(`api-service are running on: http://localhost:${port}`);
+            queueEventsListeners();
         })
     } catch (error) {
         s3Client.destroy();

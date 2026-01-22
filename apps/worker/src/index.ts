@@ -43,23 +43,30 @@ const s3Client = createClient("ap-south-1");
 
 async function processVideo(job: { data: VideoTask }) {
     // here id is db-jobId and bullmq-id;
-    const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution }, videoId } = job.data;
+    const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution } } = job.data;
 
     let lastProgress = 0; // storing last progress in memory, used for comparing progress.
 
     async function updateProgress(progress: number) {
         if (progress - lastProgress >= 5) {
             lastProgress = progress;
-
-            await prismaClient.job.update({
-                where: { id: dbJobId },
-                data: { progress }
-            })
+            try {
+                await prismaClient.job.update({
+                    where: { id: dbJobId },
+                    data: { progress }
+                })
+            } catch (error) {
+                throw new Error("failed to update progress to db");
+            }
         }
     }
 
     const dir = path.resolve("tmp");  // tmp folder;
-    await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
+    try {
+        await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
+    } catch (error) {
+        throw new Error("failed to created tmp folder");
+    }
 
     const inputFileExtension = fileType.split("/")[1]; // ex- video/mp4, video/webm etc
     const outputFileExtension = formatDefaults[format].container;
@@ -137,7 +144,6 @@ async function processVideo(job: { data: VideoTask }) {
 
         const outputUrl = `s3://${transcodedBucketName}/${outputKey}`;
 
-
         await prismaClient.job.update({
             where: { id: dbJobId },
             data: {
@@ -148,17 +154,27 @@ async function processVideo(job: { data: VideoTask }) {
             }
         })
 
-        return { status: "completed", outputUrl };
+        return { status: "completed" };
     } catch (error) {
         console.error(`[${dbJobId}] failed`, error);
-        await prismaClient.job.update({
-            where: { id: dbJobId },
-            data: {
-                status: Status.FAILED,
-                finishedAt: new Date(),
-                errorMessage: error instanceof Error ? error.message : "Unknown Error"
+
+        if (error instanceof Error) {
+            const isFatal = error.message.includes("file body is empty")
+                || error.message.includes("not a valid video");
+
+            if (isFatal) { // no point of retry if these error
+                await prismaClient.job.update({
+                    where: { id: dbJobId },
+                    data: {
+                        status: Status.FAILED,
+                        finishedAt: new Date(),
+                        errorMessage: error instanceof Error ? error.message : "Unknown Error"
+                    }
+                });
+                return;
             }
-        });
+        }
+        throw error;
     } finally {
         if (fs.existsSync(localInput)) {
             fs.unlinkSync(localInput);

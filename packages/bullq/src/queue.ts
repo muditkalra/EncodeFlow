@@ -8,7 +8,7 @@ export function createQueue(queueName: string, redisUrl: string) {
         defaultJobOptions: {
             attempts: 3,
             backoff: {
-                type: "fixed",
+                type: "exponential",
                 delay: 1000,
             }
         }
