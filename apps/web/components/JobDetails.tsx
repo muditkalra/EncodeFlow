@@ -3,7 +3,7 @@
 import { ColumnType } from '@/types';
 import { calculateProcessingTime, formatTime, getFileSizeWithUnit } from '@/utils';
 import { OutputConfigType } from '@repo/types';
-import { CheckCircle2, CircleX, FileVideoCamera } from 'lucide-react';
+import { CheckCircle, CircleMinus, FileVideoCamera } from 'lucide-react';
 import DownloadButton from './DownloadButton';
 import JobStatusBadge from './JobStatusBadge';
 import { Button } from './ui/button';
@@ -102,9 +102,9 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                             </div>
                             <div className="">
                                 {includeAudio ?
-                                    <CheckCircle2 className="size-5 text-green-700" />
+                                    <CheckCircle className="size-4 text-green-700" />
                                     :
-                                    <CircleX className="size-5 text-red-800" />
+                                    <CircleMinus className="size-4 text-red-700" />
                                 }
                             </div>
                         </div>

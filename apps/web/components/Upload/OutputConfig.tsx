@@ -69,7 +69,7 @@ export default function OutputConfig({ config, setConfig, disabled, uploadState 
 
                 {/* Audio include */}
                 <div className="flex gap-4 items-center">
-                    <Checkbox id='audioInclude' checked={config.includeAudio} onCheckedChange={(v) => { setConfig({ ...config, includeAudio: Boolean(v) }); console.log(v, "status"); }} disabled={disabled} />
+                    <Checkbox id='audioInclude' checked={config.includeAudio} onCheckedChange={(v) => setConfig({ ...config, includeAudio: Boolean(v) })} disabled={disabled} />
                     <Label htmlFor='audioInclude' className='text-muted-foreground'>Include Audio</Label>
                 </div>
             </div>

@@ -1,16 +1,16 @@
-import { type Video } from "@repo/db"
+import { type Video } from "@repo/db";
 
 export type VideoResolution = "1080p" | "720p" | "480p" | "360p";
 export const videoResolutions: VideoResolution[] = ["1080p", "720p", "480p", "360p"];
 
 
-export type Format = "mp4" | "webm" | "av1";
-export const formats: Format[] = ["mp4", "webm", "av1"];
+export type Format = "mp4" | "webm" | "hevc";
+export const formats: Format[] = ["mp4", "webm", "hevc"];
 
-export const formatDefaults: Record<Format, { video: string, audio: string }> = {
-    mp4: { video: 'libx264', audio: 'aac' },
-    webm: { video: 'libvpx-vp9', audio: 'libopus' },
-    av1: { video: 'libaom-av1', audio: 'libopus' },
+export const formatDefaults: Record<Format, { video: string, audio: string, container: string }> = {
+    mp4: { video: 'libx264', audio: 'aac', container: "mp4" },
+    webm: { video: 'libvpx-vp9', audio: 'libopus', container: "webm" },
+    hevc: { video: 'libx265', audio: 'aac', container: "mp4" },
 };
 
 // used for sending data from api-server to workers(queue).

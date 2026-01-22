@@ -14,7 +14,7 @@ const dummyData: ColDef[] = [
         "videoId": "e035439c-cd81-44bd-8765-93918c5c3582",
         "status": "PROCESSING",
         "progress": 70,
-        "outputConfig": "{\"format\":\"mp4\",\"resolution\":\"1080p\",\"includeAudio\":true}",
+        "outputConfig": "{\"format\":\"mp4\",\"resolution\":\"1080p\",\"includeAudio\":false}",
         "outputUrl": "s3://video-transcoder-transcoded-bucket/ee5f6d11-26fa-414f-808a-8ef55e0c3365.mp4",
         "errorMessage": null,
         "startedAt": new Date("2026-01-14T06:33:30.837Z"),

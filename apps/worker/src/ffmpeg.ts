@@ -22,7 +22,9 @@ export function createFFmpegArgs(inputPath: string, config: OutputConfigType, ou
         args.push('-an'); // remove audio;
     }
 
-    args.push('-f', format);
+    // container 
+    const container = formatDefaults[format].container || format;
+    args.push('-f', container);
 
     args.push(outputPath);
 

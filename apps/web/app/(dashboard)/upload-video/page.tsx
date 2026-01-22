@@ -1,18 +1,18 @@
 "use client";
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import ActivityFeedTable from '@/components/Upload/ActivityFeedTable';
 import OutputConfig from '@/components/Upload/OutputConfig';
 import UploadActions from '@/components/Upload/UploadActions';
 import UploadDropzone from '@/components/Upload/UploadDropzone';
 import VideoPreview from '@/components/Upload/VideoPreview';
 import { UploadState, VideoDetail } from '@/types';
-import { useMutation } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
-import axios from "axios";
-import { toast } from 'sonner';
-import { TranscodeJobBody, OutputConfigType } from '@repo/types';
-import ActivityFeedTable from '@/components/Upload/ActivityFeedTable';
 import { API_URL } from '@/utils';
+import { OutputConfigType, TranscodeJobBody } from '@repo/types';
+import { useMutation } from '@tanstack/react-query';
+import axios from "axios";
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 
 export default function page() {
@@ -64,7 +64,6 @@ export default function page() {
 		onSuccess: () => {
 			toast.success("Transcoding started");
 			setUploadState("PROCESSING");
-			console.log("on success of job");
 			setVideo(null);
 			setVideoDetail(null);
 		},
@@ -75,7 +74,7 @@ export default function page() {
 		}
 	});
 
-	const handleClick = useCallback(async () => {
+	const handleClick = async () => {
 		if (!video || !videoDetail) {
 			return;
 		}
@@ -111,7 +110,7 @@ export default function page() {
 			console.log("error from try catch", error);
 			setUploadState("FAILED");
 		}
-	}, [video, videoDetail]);
+	};
 
 	return (
 		<div className="p-4 space-y-8">

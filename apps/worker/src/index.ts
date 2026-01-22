@@ -1,5 +1,6 @@
+import { prismaClient, Status } from "@repo/db";
 import { createClient, GetObjectCommand, PutObjectCommand } from "@repo/s3";
-import { type VideoTask } from "@repo/types";
+import { formatDefaults, type VideoTask } from "@repo/types";
 import { Worker } from "bullmq";
 import { spawn } from "child_process";
 import "dotenv/config.js";
@@ -7,9 +8,8 @@ import ffmpegPath from "ffmpeg-static";
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
-import { createFFmpegArgs } from "./ffmpeg";
 import { redisUrl, transcodedBucketName } from "./config/constants";
-import { prismaClient, Status } from "@repo/db";
+import { createFFmpegArgs } from "./ffmpeg";
 
 
 function calculateProgress(outTimeMs: number, duration: number): number {
@@ -62,7 +62,7 @@ async function processVideo(job: { data: VideoTask }) {
     await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
 
     const inputFileExtension = fileType.split("/")[1]; // ex- video/mp4, video/webm etc
-    const outputFileExtension = format == "av1" ? 'mp4' : format; // av1 uses mp4 file extension;
+    const outputFileExtension = formatDefaults[format].container;
 
     const localInput = path.resolve("tmp", `${dbJobId}-input.${inputFileExtension}`);
     const localOutput = path.resolve("tmp", `${dbJobId}-output.${outputFileExtension}`);
@@ -97,7 +97,7 @@ async function processVideo(job: { data: VideoTask }) {
             const ffmpeg = spawn(ffmpegPath, args);
 
             ffmpeg.stderr.on("data", async (chunk) => {
-                // console.log(chunk.toString(), "---------logs from ffmpeg----------");
+                // "---------logs from ffmpeg----------";
                 const lines = chunk.toString().split('\n');
 
                 for (const line of lines) {
@@ -122,7 +122,7 @@ async function processVideo(job: { data: VideoTask }) {
         // uploading back to s3;
         console.log(`uploading transcoded file ${dbJobId}_${fileName}_${resolution} to s3 `);
 
-        const outputKey = `${dbJobId}.${format}`;
+        const outputKey = `${dbJobId}.${outputFileExtension}`;
 
         const fileStream = fs.createReadStream(localOutput);
         const uploadCmd = new PutObjectCommand({

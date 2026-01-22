@@ -10,7 +10,7 @@ import { calculateProcessingTime, getRelativeTime, getTimediff } from "@/utils";
 import type { OutputConfigType } from "@repo/types";
 import { type JobStatus } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, CircleX } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle, CircleMinus } from "lucide-react";
 
 type ColDef = ColumnType;
 
@@ -101,9 +101,9 @@ export const columns: ColumnDef<ColDef>[] = [
             const value = (getValue() as OutputConfigType).includeAudio;
             return (
                 value ?
-                    <CheckCircle2 className="size-5 text-green-500/50" />
+                    <CheckCircle className="size-4 text-green-700" />
                     :
-                    <CircleX className="size-5 text-red-500/50" />
+                    <CircleMinus className="size-4 text-red-700" />
             )
         }
     },
