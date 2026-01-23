@@ -175,15 +175,15 @@ importers:
 
   apps/worker:
     dependencies:
+      '@repo/bullq':
+        specifier: workspace:*
+        version: link:../../packages/bullq
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
       '@repo/s3':
         specifier: workspace:*
         version: link:../../packages/s3
-      bullmq:
-        specifier: ^5.66.2
-        version: 5.66.2
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3

@@ -1,7 +1,7 @@
 import { prismaClient, Status } from "@repo/db";
 import { createClient, GetObjectCommand, PutObjectCommand } from "@repo/s3";
 import { formatDefaults, type VideoTask } from "@repo/types";
-import { Worker } from "bullmq";
+import { Worker } from "@repo/bullq";
 import { spawn } from "child_process";
 import "dotenv/config.js";
 import ffmpegPath from "ffmpeg-static";

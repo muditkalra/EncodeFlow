@@ -104,6 +104,7 @@ export default function page() {
 			const res = await createJobMutation.mutateAsync(job);
 			setVideo(null);
 			setVideoDetail(null);
+			setConfig({ format: 'mp4', includeAudio: true, resolution: "1080p" }); //setting to default;
 			console.log(res, "res");
 			console.log("finished upload");
 		} catch (error) {

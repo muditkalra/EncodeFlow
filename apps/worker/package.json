@@ -12,9 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@repo/s3": "workspace:*",
+    "@repo/bullq": "workspace:*",
     "@repo/db": "workspace:*",
-    "bullmq": "^5.66.2",
+    "@repo/s3": "workspace:*",
     "dotenv": "^17.2.3",
     "ffmpeg-static": "^5.3.0"
   },
