@@ -14,7 +14,7 @@ export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
         enabled
     })
 
-    if (!enabled || !data) {
+    if (!enabled) {
         return;
     }
 
@@ -31,7 +31,7 @@ export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {data.map((job, id) =>
+                {data?.map((job, id) =>
                     <ActivityFeedRow key={id} job={job} />
                 )}
             </TableBody>

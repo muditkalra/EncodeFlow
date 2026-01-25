@@ -62,7 +62,6 @@ export default function page() {
 		mutationFn: (payload: TranscodeJobBody) =>
 			axios.post(`${API_URL}/transcode`, payload).then(res => res.data),
 		onSuccess: () => {
-			toast.success("Transcoding started");
 			setUploadState("PROCESSING");
 			setVideo(null);
 			setVideoDetail(null);
@@ -80,7 +79,6 @@ export default function page() {
 		}
 
 		try {
-			setTableEnabled(true);
 			// fetching signed Url;
 			setUploadState("FETCHINGURL");
 			const { url } = await getUploadUrlMutation.mutateAsync();
@@ -102,11 +100,12 @@ export default function page() {
 				outputConfig: { format, resolution, includeAudio }
 			};
 			const res = await createJobMutation.mutateAsync(job);
+			setTableEnabled(true);
 			setVideo(null);
 			setVideoDetail(null);
 			setConfig({ format: 'mp4', includeAudio: true, resolution: "1080p" }); //setting to default;
 			console.log(res, "res");
-			console.log("finished upload");
+			toast.success("Transcoding started.. ");
 		} catch (error) {
 			console.log("error from try catch", error);
 			setUploadState("FAILED");
