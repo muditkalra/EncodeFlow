@@ -1,6 +1,6 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
-export function createClient(region: string,) {
+export function creates3Client(region: string,) {
     return new S3Client({
         region: region || "us-east-1",
         credentials: {

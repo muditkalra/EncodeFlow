@@ -1,10 +1,9 @@
 import { Queue } from "bullmq";
+import { Redis } from "ioredis";
 
-export function createQueue(queueName: string, redisUrl: string) {
+export function createQueue(queueName: string, redisConnection: Redis) {
     return new Queue(queueName, {
-        connection: {
-            url: redisUrl
-        },
+        connection: redisConnection.options,
         defaultJobOptions: {
             attempts: 3,
             backoff: {

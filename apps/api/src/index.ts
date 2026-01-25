@@ -1,14 +1,13 @@
-import { createQueue } from "@repo/bullq";
 import { prismaClient } from "@repo/db";
-import { createClient, GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
+import { GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
 import { type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
-import { awsS3Region, awsS3TempBucketName, redisUrl, transcodedBucketName, transcodingQName } from "./config/constants";
-import { parseS3Url } from "./utils";
+import { awsS3TempBucketName, transcodedBucketName } from "./config/constants";
 import queueEventsListeners from "./events";
+import { parseS3Url, s3Client, videoQueue } from "./utils";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -27,12 +26,9 @@ app.get('/health', (req: Request, res: Response) => {
     return;
 });
 
-const s3Client = createClient(awsS3Region);
-const videoQueue = createQueue(transcodingQName, redisUrl);
-
 
 // 1. frontend call this to get signed url to put objects in s3;
-// - assuming url will look like this, /upload-url?video-title=xyz&format=video/mp4
+// - url will look like this, /upload-url?video-title=xyz&format=video/*
 app.get("/upload-url", async (req: Request, res: Response) => {
     try {
         const fileName = req.query["video-title"];

@@ -1,15 +1,16 @@
-import { prismaClient, Status } from "@repo/db";
-import { createClient, GetObjectCommand, PutObjectCommand } from "@repo/s3";
-import { formatDefaults, type VideoTask } from "@repo/types";
 import { Worker } from "@repo/bullq";
+import { prismaClient, Status } from "@repo/db";
+import { GetObjectCommand, PutObjectCommand } from "@repo/s3";
+import { formatDefaults, type VideoTask } from "@repo/types";
 import { spawn } from "child_process";
 import "dotenv/config.js";
 import ffmpegPath from "ffmpeg-static";
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
-import { redisUrl, transcodedBucketName } from "./config/constants";
+import { transcodedBucketName } from "./config/constants";
 import { createFFmpegArgs } from "./ffmpeg";
+import { redisConnection, s3Client } from "./utils";
 
 
 function calculateProgress(outTimeMs: number, duration: number): number {
@@ -39,7 +40,7 @@ async function startTranscodingDBNotify(jobId: string) {
 
 
 // s3client;
-const s3Client = createClient("ap-south-1");
+// const s3Client = creates3Client("ap-south-1");
 
 async function processVideo(job: { data: VideoTask }) {
     // here id is db-jobId and bullmq-id;
@@ -189,9 +190,7 @@ async function processVideo(job: { data: VideoTask }) {
 
 
 const worker = new Worker("transcoding-q", processVideo, {
-    connection: {
-        url: redisUrl,
-    }
+    connection: redisConnection.options
 });
 
 console.log("worker running ...");
