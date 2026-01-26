@@ -1,22 +1,21 @@
-import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { formatTime, getFileSizeWithUnit } from '@/utils'
 import { VideoType } from '@repo/types'
 import { FileVideo } from 'lucide-react'
-import { formatTime, getFileSizeWithUnit } from '@/utils'
 import DownloadButton from './DownloadButton'
+import { Card, CardContent, CardTitle } from './ui/card'
 
 export default function FileCard({ video }: { video: VideoType }) {
     return (
         <Card>
-            <CardHeader className=''>
-                <CardTitle className='flex items-center gap-2 wrap-break-word'>
-                    <FileVideo />
+            <div className="flex px-4 gap-2 h-10 items-center">
+                <FileVideo className='size-5' />
+                <CardTitle className='flex items-center gap-2 break-all'>
                     {video.name}
                 </CardTitle>
-            </CardHeader>
-            <CardContent className=''>
-                <div className="flex flex-col">
-                    <div className="grid grid-cols-2 text-sm space-y-4">
+            </div>
+            <CardContent className='px-4'>
+                <div className="flex flex-col gap-3">
+                    <div className="grid grid-cols-2 text-sm space-y-3">
                         <div className="text-muted-foreground">
                             FileType
                         </div>

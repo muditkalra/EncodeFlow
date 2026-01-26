@@ -1,12 +1,13 @@
 "use client";
 
+import { DataTablePagination } from "@/components/DataTablePagination";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getRelativeTime } from "@/utils";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ChevronDown, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -26,6 +27,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [relativeTime, setRelativeTime] = useState<string>('');
+    const [rowSelection, setRowSelection] = useState({})
 
     data = useMemo(() => (
         loading ? Array(15).fill({}) : data),
@@ -52,8 +54,8 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
         getFilteredRowModel: getFilteredRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
-        // getPaginationRowModel: getPaginationRowModel(),
-        // onRowSelectionChange: setRowSelection,
+        getPaginationRowModel: getPaginationRowModel(),
+        onRowSelectionChange: setRowSelection,
         initialState: {
             columnVisibility: {
                 filetype: false,
@@ -65,7 +67,8 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
         },
         state: {
             columnFilters,
-            sorting
+            sorting,
+            rowSelection
         },
     });
 
@@ -95,7 +98,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                     className="max-w-sm"
                 />
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger asChild title="select columns">
                         <Button variant="outline" className="">
                             Columns <ChevronDown />
                         </Button>
@@ -119,7 +122,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                         }
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button size={"icon"} variant={"outline"} onClick={refetchFn}>
+                <Button size={"icon"} variant={"outline"} onClick={refetchFn} title="refresh">
                     <RefreshCw className={fetching ? "animate-spin" : ""} />
                 </Button>
             </div>
@@ -168,6 +171,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                         )}
                     </TableBody>
                 </Table>
+                <DataTablePagination table={table} />
             </div>
         </div>
     )
