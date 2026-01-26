@@ -1,13 +1,13 @@
 import { prismaClient } from "@repo/db";
 import { GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { type TranscodeJobBody, type VideoTask } from "@repo/types";
+import { WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import { awsS3TempBucketName, transcodedBucketName } from "./config/constants";
 import queueEventsListeners from "./events";
-import { parseS3Url, s3Client, videoQueue } from "./utils";
+import { parseS3Url, redisConnection, s3Client, videoQueue } from "./utils";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -189,7 +189,8 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     }
 })
 
-app.get("/videos", async (req: Request, res: Response) => {
+// give all jobs with their video-details as well
+app.get("/all-jobs", async (req: Request, res: Response) => {
     try {
         const alljobs = await prismaClient.job.findMany({
             include: {
@@ -204,7 +205,21 @@ app.get("/videos", async (req: Request, res: Response) => {
         console.log(error);
         return res.status(400).json(error);
     }
-})
+});
+
+app.get("/all-videos", async (req: Request, res: Response) => {
+    try {
+        const alljobs = await prismaClient.video.findMany({
+            orderBy: {
+                createdAt: "desc"
+            }
+        })
+        return res.status(200).json(alljobs);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
+    }
+});
 
 // getting download url for the 
 app.post('/download-file-url', async (req: Request, res: Response) => {
@@ -232,6 +247,39 @@ app.post('/download-file-url', async (req: Request, res: Response) => {
         return res.status(400).json(error);
     }
 });
+
+// getting workers status;
+app.get("/workers-status", async (req: Request, res: Response) => {
+    try {
+        const workers = [];
+        const workersId = await redisConnection.smembers("known_workers");
+
+        for (const workerId of workersId) {
+            const raw = await redisConnection.hgetall(workerId);
+
+            if (!raw || Object.keys(raw).length === 0) {
+                await redisConnection.srem("known_workers", workerId);
+                continue;
+            }
+            const rawData = raw as unknown as WorkerData;
+
+            const worker: WorkerData = {
+                workerId: rawData.workerId,
+                status: rawData.status,
+                currentJobId: rawData.currentJobId == "" ? null : rawData.currentJobId,
+                cpu: parseFloat(`${rawData.cpu}`),
+                memoryUsed: parseInt(`${rawData.memoryUsed}`),
+                heartBeatAt: parseInt(`${rawData.heartBeatAt}`),
+            }
+            workers.push(worker);
+        }
+
+        return res.status(200).json(workers);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+})
 
 const start = () => {
     try {

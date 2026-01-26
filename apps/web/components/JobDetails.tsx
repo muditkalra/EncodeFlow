@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnType } from '@/types';
+import { JobsColumnType } from '@/types';
 import { calculateProcessingTime, formatTime, getFileSizeWithUnit } from '@/utils';
 import { OutputConfigType } from '@repo/types';
 import { CheckCircle, CircleMinus, FileVideoCamera } from 'lucide-react';
@@ -12,7 +12,7 @@ import { Separator } from './ui/separator';
 import { SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from './ui/sheet';
 
 interface JobsDetailsProps {
-    job: ColumnType
+    job: JobsColumnType
 }
 
 export default function JobDetails({ job }: JobsDetailsProps) {
@@ -107,6 +107,12 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                     <CircleMinus className="size-4 text-red-700" />
                                 }
                             </div>
+                            <div className="text-muted-foreground">
+                                Size
+                            </div>
+                            <div className="">
+                                {job.outputSize ? getFileSizeWithUnit(job.outputSize) : "-"}
+                            </div>
                         </div>
                     </div>
 
@@ -137,7 +143,7 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                 {formatTime(job.video.duration * 1000)}
                             </div>
                             <div className="text-muted-foreground text-sm">
-                                Resolution (w : h)
+                                Resolution
                             </div>
                             <div className="">
                                 {job.video.width} x {job.video.height}p

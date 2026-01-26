@@ -23,10 +23,10 @@ export default function DownloadButton({ className, children, disabled, buttonTy
             const response = await axios.post(`${API_URL}/download-file-url`, { url, bucket: buttonType });
 
             const elapsed = Date.now() - startTime;
-            const miniDuration = 500 // 500ms to show loading;
+            const minDuration = 500 // 500ms to show loading;
 
-            if (elapsed < miniDuration) { // artificially slowing response as this query is being executed in (1-5)ms and ui looking flashy;
-                await new Promise((resolve) => setTimeout(resolve, miniDuration - elapsed));
+            if (elapsed < minDuration) { // artificially slowing response as this query is being executed in (1-5)ms and ui looking flashy;
+                await new Promise((resolve) => setTimeout(resolve, minDuration - elapsed));
             }
 
             return response.data;
@@ -55,7 +55,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
 
 
     return (
-        <Button variant={"secondary"} className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} disabled={disabled || createDownloadUrl.isPending} onClick={downloadFile}>
+        <Button variant={variant} className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} disabled={disabled || createDownloadUrl.isPending} onClick={downloadFile}>
             {children}
             {createDownloadUrl.isPending ? <Loader className='animate-spin' /> : <Download />}
         </Button>

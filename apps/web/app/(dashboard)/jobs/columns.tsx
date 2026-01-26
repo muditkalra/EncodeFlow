@@ -1,20 +1,21 @@
 "use client";
 
+import DownloadButton from "@/components/DownloadButton";
 import JobDetails from "@/components/JobDetails";
 import JobStatusBadge from "@/components/JobStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { ColumnType } from "@/types";
+import { cn } from "@/lib/utils";
+import { JobsColumnType } from "@/types";
 import { calculateProcessingTime, getRelativeTime, getTimediff } from "@/utils";
 import type { OutputConfigType } from "@repo/types";
 import { type JobStatus } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle, CircleMinus } from "lucide-react";
 
-type ColDef = ColumnType;
 
-export const columns: ColumnDef<ColDef>[] = [
+export const columns: ColumnDef<JobsColumnType>[] = [
     {
         id: "Select",
         header: ({ table }) => (
@@ -139,14 +140,19 @@ export const columns: ColumnDef<ColDef>[] = [
         cell: ({ row }) => {
             const rowData = row.original;
             return (
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant={"ghost"}>
-                            More details
-                        </Button>
-                    </SheetTrigger>
-                    <JobDetails job={rowData} />
-                </Sheet>
+                <div className="flex gap-2">
+                    <DownloadButton variant={"secondary"} buttonType={'output'} disabled={rowData.status !== "COMPLETED"} url={rowData.outputUrl} size={"sm"} className={cn(rowData.status !== "COMPLETED" && "invisible")}>
+                        Output
+                    </DownloadButton>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant={"ghost"}>
+                                More details
+                            </Button>
+                        </SheetTrigger>
+                        <JobDetails job={rowData} />
+                    </Sheet>
+                </div>
             )
 
         }

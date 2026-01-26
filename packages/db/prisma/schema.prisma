@@ -25,7 +25,7 @@ model Video {
     name        String
     userId      String // will use clerk id here
     fileType    String // video/mp4, video/webm, video/av1 etc.
-    size        Int // in bytes (int can easily hold values in bytes for 20-30MB files)
+    size        Int // in bytes (int can easily hold values in bytes for 20-40MB files)
     duration    Int // in seconds
     width       Int
     height      Int
@@ -44,6 +44,7 @@ model Job {
     progress     Int       @default(0)
     outputConfig Json // will contain resolution, format, includeaudio, etc (TranscodeJobBodyconfig) 
     outputUrl    String? // output s3 url
+    outputSize   Int? // in bytes (int can easily hold values in bytes for 20-40MB files)
     errorMessage String?
     startedAt    DateTime?
     finishedAt   DateTime?

@@ -5,22 +5,27 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { getRelativeTime } from "@/utils";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ChevronDown, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    loading: boolean
+    loading: boolean,
+    refetchFn: () => void,
+    lastUpdatedAt: number;
+    fetching: boolean
 }
 
 
-export function DataTable<TData, TValue>({ columns, data, loading }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, lastUpdatedAt, fetching }: DataTableProps<TData, TValue>) {
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [relativeTime, setRelativeTime] = useState<string>('');
 
     data = useMemo(() => (
         loading ? Array(15).fill({}) : data),
@@ -64,10 +69,25 @@ export function DataTable<TData, TValue>({ columns, data, loading }: DataTablePr
         },
     });
 
+    useEffect(() => {
+        const modifyRelativeTime = () => {
+            const gRT = getRelativeTime(lastUpdatedAt);
+            setRelativeTime(gRT);
+        }
+
+        const interval = setInterval(modifyRelativeTime, 5000);
+        return () => {
+            clearInterval(interval);
+        };
+
+    }, [lastUpdatedAt]);
 
     return (
         <div className="flex flex-col gap-2.5 mb-5">
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 items-center">
+                {relativeTime && <div className="text-xs text-muted-foreground">
+                    Last updated: {relativeTime}
+                </div>}
                 <Input
                     placeholder="Search Filename"
                     value={(table.getColumn("filename")?.getFilterValue() as string) ?? ""}
@@ -99,6 +119,9 @@ export function DataTable<TData, TValue>({ columns, data, loading }: DataTablePr
                         }
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Button size={"icon"} variant={"outline"} onClick={refetchFn}>
+                    <RefreshCw className={fetching ? "animate-spin" : ""} />
+                </Button>
             </div>
             <div className="overflow-hidden rounded-md border">
                 <Table className="">

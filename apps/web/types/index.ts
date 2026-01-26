@@ -16,6 +16,6 @@ export const jobStatusBadgeColor: Record<JobStatus, string> = {
     PROCESSING: "bg-blue-50 text-blue-700 ring ring-blue-500 dark:bg-blue-950/20 dark:text-blue-400 dark:ring-blue-400"
 }
 
-export type ColumnType = JobType & {
+export type JobsColumnType = JobType & {
     video: VideoType
 }
