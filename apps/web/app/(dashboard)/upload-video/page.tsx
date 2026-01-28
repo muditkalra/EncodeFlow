@@ -107,7 +107,7 @@ export default function page() {
 			console.log(res, "res");
 			toast.success("Transcoding started.. ");
 		} catch (error) {
-			console.log("error from try catch", error);
+			console.log("error", error);
 			setUploadState("FAILED");
 		}
 	};

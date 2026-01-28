@@ -11,7 +11,7 @@ import path from "path";
 import { pipeline } from "stream/promises";
 import { transcodedBucketName } from "./config/constants";
 import { createFFmpegArgs } from "./ffmpeg";
-import { redisConnection, s3Client, calculateProgress } from "./utils";
+import { calculateProgress, redisConnection, s3Client } from "./utils";
 
 
 

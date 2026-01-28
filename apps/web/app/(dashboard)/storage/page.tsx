@@ -1,10 +1,9 @@
-import FileCard from '@/components/FileCard'
+import FileCard from '@/components/FileCard';
 import { Button } from '@/components/ui/button';
 import { API_URL } from '@/utils';
 import { VideoType } from '@repo/types';
 import axios from 'axios';
-import { ArrowUpRight, FileVideo } from 'lucide-react';
-import React from 'react'
+import { FileVideo } from 'lucide-react';
 
 const getVideos = async (): Promise<VideoType[]> => {
 	try {
@@ -127,7 +126,7 @@ export default async function page() {
 				Find all the input files
 			</div>
 			{videos.length > 0 ?
-				<div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				<div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
 					{videos.map((video, i) => <FileCard key={i} video={video} />)}
 				</div>
 				:
