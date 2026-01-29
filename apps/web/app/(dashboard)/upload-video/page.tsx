@@ -8,8 +8,8 @@ import UploadDropzone from '@/components/Upload/UploadDropzone';
 import VideoPreview from '@/components/Upload/VideoPreview';
 import { UploadState, VideoDetail } from '@/types';
 import { API_URL } from '@/utils';
-import { OutputConfigType, TranscodeJobBody } from '@repo/types';
-import { useMutation } from '@tanstack/react-query';
+import { ActiveJob, OutputConfigType, TranscodeJobBody } from '@repo/types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from "axios";
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -22,6 +22,8 @@ export default function page() {
 	const [uploadState, setUploadState] = useState<UploadState>("IDLE");
 	const [progress, setProgress] = useState<number>(0);
 	const [tableEnabled, setTableEnabled] = useState<boolean>(false);
+
+	const queryClient = useQueryClient();
 
 
 	const getUploadUrlMutation = useMutation({
@@ -61,15 +63,39 @@ export default function page() {
 	const createJobMutation = useMutation({
 		mutationFn: (payload: TranscodeJobBody) =>
 			axios.post(`${API_URL}/transcode`, payload).then(res => res.data),
+		onMutate: async (payload: TranscodeJobBody) => {
+			await queryClient.cancelQueries({ queryKey: ["active-jobs"] });
+
+			const newActiveJob: ActiveJob = {
+				jobId: Math.floor(Math.random() * 1000).toString(),
+				videoId: Math.floor(Math.random() * 1000).toString(),
+				progress: 0,
+				status: 'PENDING',
+				video: {
+					name: payload.fileName
+				},
+				createdAt: new Date().toString()
+			}
+
+			const previousActiveJobs = queryClient.getQueryData(["active-jobs"]);
+
+			queryClient.setQueryData(['active-jobs'], (old: ActiveJob[]) => [newActiveJob, ...(old || [])]);
+
+			return { previousActiveJobs };
+		},
 		onSuccess: () => {
 			setUploadState("PROCESSING");
 			setVideo(null);
 			setVideoDetail(null);
 		},
-		onError: (error) => {
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["active-jobs"] })
+		},
+		onError: (error, newActiveJob, context) => {
 			console.log(error);
 			toast.error(error.message);
 			setUploadState("FILE_SELECTED");
+			queryClient.setQueryData(["active-jobs"], context?.previousActiveJobs);
 		}
 	});
 
@@ -113,15 +139,15 @@ export default function page() {
 	};
 
 	return (
-		<div className="p-4 space-y-8">
+		<div className="p-4 space-y-6">
 			{(!video || !videoDetail) && <UploadDropzone setVideo={setVideo} setVideoDetail={setVideoDetail} />}
 			{(video && videoDetail) &&
 				<Card className=''>
-					<CardContent className='w-full max-w-2xl mx-auto flex flex-col gap-6'>
+					<CardContent className='w-full max-w-xl 2xl:max-w-2xl mx-auto flex flex-col gap-6'>
 						<VideoPreview video={video} videoDetail={videoDetail} />
 						<OutputConfig config={config} setConfig={setConfig} disabled={uploadState == "FETCHINGURL" || uploadState == "UPLOADING"} uploadState={uploadState} />
 					</CardContent>
-					<CardFooter className='w-full max-w-2xl mx-auto justify-end'>
+					<CardFooter className='w-full max-w-xl 2xl:max-w-2xl mx-auto justify-end'>
 						<UploadActions uploadState={uploadState} onUpload={handleClick} setVideo={setVideo} setVideoDetail={setVideoDetail} disabled={uploadState == "FETCHINGURL"} progress={progress} />
 					</CardFooter>
 				</Card>

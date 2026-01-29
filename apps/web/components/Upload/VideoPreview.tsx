@@ -11,7 +11,7 @@ export default function VideoPreview({ video, videoDetail }: Props) {
     return (
         <div className='space-y-4'>
             <div className="place-items-center">
-                <video controls className='h-72'>
+                <video controls className=''>
                     <source src={URL.createObjectURL(video)} type={video.type} />
                 </video>
             </div>

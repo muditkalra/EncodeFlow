@@ -146,14 +146,14 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
                 OR: [
                     {
                         status: {
-                            in: ["PROCESSING"]
+                            in: ["PROCESSING", "PENDING"]
                         }
                     },
                     {
                         AND: [
                             {
                                 status: {
-                                    in: ["COMPLETED", "FAILED", "PENDING"]
+                                    in: ["COMPLETED", "FAILED"]
                                 }
                             },
                             {
