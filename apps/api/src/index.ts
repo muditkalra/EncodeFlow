@@ -1,6 +1,6 @@
 import { prismaClient } from "@repo/db";
 import { GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
+import { MetricData, MetricKey, WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import "dotenv/config.js";
 import express, { Request, Response } from "express";
@@ -186,6 +186,37 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         return res.status(400).json({ error });
+    }
+});
+
+app.get('/metricsData', async (req: Request, res: Response) => {
+    try {
+        const statusCounts = await prismaClient.job.groupBy({
+            by: ["status"],
+            _count: {
+                status: true
+            }
+        });
+
+        const metricsData: MetricData = {
+            total: 0,
+            completed: 0,
+            processing: 0,
+            pending: 0,
+            failed: 0
+        };
+
+        statusCounts.forEach((statusCount) => {
+            const count = statusCount._count.status;
+            const status = statusCount.status.toLocaleLowerCase() as MetricKey;
+            metricsData[status] += count;
+            metricsData.total += count;
+        });
+
+        return res.status(200).json(metricsData);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
     }
 })
 

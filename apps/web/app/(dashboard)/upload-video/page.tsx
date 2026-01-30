@@ -77,9 +77,9 @@ export default function page() {
 				createdAt: new Date().toString()
 			}
 
-			const previousActiveJobs = queryClient.getQueryData(["active-jobs"]);
+			const previousActiveJobs = queryClient.getQueryData<ActiveJob[]>(["active-jobs"]);
 
-			queryClient.setQueryData(['active-jobs'], (old: ActiveJob[]) => [newActiveJob, ...(old || [])]);
+			queryClient.setQueryData<ActiveJob[]>(['active-jobs'], (old = []) => [newActiveJob, ...old]);
 
 			return { previousActiveJobs };
 		},

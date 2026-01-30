@@ -7,41 +7,41 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
 import { usePathname } from 'next/navigation';
 
-interface item {
+interface Item {
 	title: string;
 	url: string;
-	icon: LucideIcon
+	Icon: LucideIcon
 }
-const items: item[] = [
+const items: Item[] = [
 	{
 		title: "Dashboard",
 		url: "/",
-		icon: LayoutDashboard
+		Icon: LayoutDashboard
 	},
 	{
 		title: "Upload Video",
 		url: "/upload-video",
-		icon: CloudUpload
+		Icon: CloudUpload
 	},
 	{
 		title: "Jobs",
 		url: "/jobs",
-		icon: List
+		Icon: List
 	},
 	{
 		title: "Workers",
 		url: "/workers",
-		icon: Cpu
+		Icon: Cpu
 	},
 	{
 		title: "Storage",
 		url: "/storage",
-		icon: Database
+		Icon: Database
 	},
 	{
 		title: "Settings",
 		url: "/settings",
-		icon: Settings
+		Icon: Settings
 	}
 ]
 
@@ -66,15 +66,15 @@ export default function AppSideBar() {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent className='mt-1'>
-				{items.map((item) => (
-					<SidebarGroup className='py-1.5' key={item.title}>
+				{items.map(({ Icon, title, url }) => (
+					<SidebarGroup className='py-1.5' key={title}>
 						<SidebarGroupContent>
 							<SidebarMenu>
 								<SidebarMenuItem>
-									<SidebarMenuButton asChild isActive={isActive(item.url)} className='data-[active=true]:bg-primary data-[active=true]:text-primary-foreground'>
-										<Link href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
+									<SidebarMenuButton asChild isActive={isActive(url)} className='data-[active=true]:bg-primary data-[active=true]:text-primary-foreground' >
+										<Link href={url}>
+											<Icon />
+											<span>{title}</span>
 										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>

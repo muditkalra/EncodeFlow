@@ -1,40 +1,60 @@
-import CompletedJobs from './CompletedJobs'
-import FailedJobs from './FailedJobs'
-import ProcessingJobs from './ProcessingJobs'
-import TotalJobsCard from './TotalJobsCard'
+"use client";
 
-const cards = [
+import { CheckCircle, ListCheck, Loader2, XCircle } from 'lucide-react'
+import MetricCard from './MetricCard'
+import { JSX } from 'react';
+import { MetricKey } from '@repo/types';
+import useJobMetrics from '@/hooks/useJobMetrics';
+
+interface CardItem {
+    title: string;
+    datakey: MetricKey;
+    Icon: JSX.Element,
+    footer: string;
+}
+
+const cards: CardItem[] = [
     {
         title: "Total Jobs",
-        value: 124,
-        footer: "Total Jobs completed till now",
+        datakey: "total",
+        Icon: <ListCheck className='size-4' />,
+        footer: "All time",
+    },
+    {
+        title: "Completed",
+        datakey: "completed",
+        Icon: <CheckCircle className='size-4 text-green-700' />,
+        footer: "Successfully processed",
     },
     {
         title: "Processing",
-        value: 4,
-        footer: "Number of Jobs Processing",
+        datakey: "processing",
+        Icon: <Loader2 className='size-4 text-blue-600' />,
+        footer: "Currently active",
     },
     {
         title: "Failed",
-        value: 2,
-        footer: "Number of Jobs failed",
-    },
-    {
-        title: "Average Processing Time",
-        value: 42,
-        footer: "Total Jobs completed till now",
+        datakey: "failed",
+        Icon: <XCircle className='size-4 text-red-800' />,
+        footer: "Requires retry",
     },
 ]
 
 
 
 export default function MetricCards() {
+    const { data, dataUpdatedAt } = useJobMetrics();
+
     return (
-        <div className="grid gap-2 grid-cols-2 md:grid-cols-4 mt-2 mx-4">
-            <TotalJobsCard />
-            <ProcessingJobs />
-            <CompletedJobs />
-            <FailedJobs />
+        <div className="space-y-1.5">
+            <div className="text-muted-foreground text-right text-xs">
+                last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-IN")}
+            </div>
+            <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
+                {cards.map(({ Icon, footer, datakey, title }, idx) =>
+                    <MetricCard icon={Icon} footer={footer} title={title} key={idx} value={data?.[datakey]} />
+                )}
+            </div>
         </div>
     )
 }
