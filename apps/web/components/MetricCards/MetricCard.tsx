@@ -4,7 +4,7 @@ import { Skeleton } from '../ui/skeleton';
 
 interface MetriCardProps {
     title: string;
-    value?: number | string;
+    value: number | string | undefined;
     icon: JSX.Element;
     footer: string;
 }
@@ -20,7 +20,7 @@ export default function MetricCard({ title, value, icon, footer }: MetriCardProp
                         {icon}
                     </div>
                     <div className="mt-2 text-3xl font-bold">
-                        {value ?? <Skeleton className='h-10 w-20 rounded-sm' />}
+                        {value ?? <Skeleton className='h-10 w-full rounded-sm' />}
                     </div>
                 </div>
             </CardContent>

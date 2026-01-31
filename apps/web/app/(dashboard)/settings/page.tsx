@@ -47,7 +47,7 @@ export default function page() {
 		<div className="py-4 px-6 flex flex-col gap-8">
 			<div className="">
 				<div className="text-xl">
-					username here
+					USERNAME 
 				</div>
 				<div className="text-xs text-muted-foreground mt-1.5">
 					Manage your details and personal perferences here.
@@ -56,7 +56,7 @@ export default function page() {
 			<Tabs defaultValue={items[0]?.value} className=''>
 				<TabsList className='w-full max-w-4xl' variant={"line"}>
 					{items.map(({ Icon, title, value }, idx) =>
-						<TabsTrigger value={value} key={idx} className=''>
+						<TabsTrigger value={value} key={idx}>
 							<Icon />
 							{title}
 						</TabsTrigger>
@@ -64,7 +64,7 @@ export default function page() {
 				</TabsList>
 				{
 					items.map(({ value, Comp }, idx) => (
-						<TabsContent value={value} key={idx}>
+						<TabsContent value={value} key={idx} className='p-6 mb-5'>
 							<Comp />
 						</TabsContent>
 					))
