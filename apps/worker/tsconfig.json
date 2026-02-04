@@ -3,9 +3,19 @@
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./dist",
+        "lib": [
+            "es2022"
+        ],
         "typeRoots": [
             "./src/types",
             "./node_modules/@types"
         ],
     },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }

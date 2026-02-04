@@ -3,9 +3,9 @@
 import { CloudUpload, Cpu, Database, EllipsisVertical, LayoutDashboard, List, LucideIcon, Settings, User2 } from 'lucide-react';
 import Link from 'next/link';
 // import Logo from './Logo';
+import { usePathname } from 'next/navigation';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
-import { usePathname } from 'next/navigation';
 
 interface Item {
 	title: string;
