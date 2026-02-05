@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { getRelativeTime } from "@/utils";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ChevronDown, RefreshCw } from "lucide-react";
@@ -18,16 +19,16 @@ interface DataTableProps<TData, TValue> {
     loading: boolean,
     refetchFn: () => void,
     lastUpdatedAt: number;
-    fetching: boolean
 }
 
 
-export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, lastUpdatedAt, fetching }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, lastUpdatedAt }: DataTableProps<TData, TValue>) {
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [relativeTime, setRelativeTime] = useState<string>('');
     const [rowSelection, setRowSelection] = useState({})
+    const [fetching, setFetching] = useState<boolean>(false);
 
     data = useMemo(() => (
         loading ? Array(15).fill({}) : data),
@@ -85,6 +86,13 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
 
     }, [lastUpdatedAt]);
 
+
+    const handleClick = () => {
+        setFetching(true);
+        refetchFn();
+        setTimeout(() => setFetching(false), 1500);
+    }
+
     return (
         <div className="flex flex-col gap-2.5 mb-5">
             <div className="flex justify-end gap-3 items-center">
@@ -122,8 +130,8 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                         }
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button size={"icon"} variant={"outline"} onClick={refetchFn} title="refresh">
-                    <RefreshCw className={fetching ? "animate-spin" : ""} />
+                <Button size={"icon"} variant={"outline"} onClick={handleClick} title="refresh">
+                    <RefreshCw className={cn(!fetching ? "" : "animate-spin")} />
                 </Button>
             </div>
             <div className="overflow-hidden rounded-md border">

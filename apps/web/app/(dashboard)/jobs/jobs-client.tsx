@@ -246,7 +246,7 @@ const dummyData: JobsColumnType[] = [
 ]
 
 export default function JobsClient() {
-    const { data, isLoading, refetch, dataUpdatedAt, isFetching } = useQuery<JobsColumnType[]>({
+    const { data, isLoading, refetch, dataUpdatedAt } = useQuery<JobsColumnType[]>({
         queryKey: ["alljobs"],
         queryFn: () => axios.get(`${API_URL}/all-jobs`).then(res => res.data),
         refetchInterval: 1000 * 60, // polling every minute
@@ -254,6 +254,6 @@ export default function JobsClient() {
 
 
     return (
-        <DataTable columns={columns} data={data || []} loading={isLoading} refetchFn={() => refetch()} lastUpdatedAt={dataUpdatedAt} fetching={isFetching} />
+        <DataTable columns={columns} data={data || []} loading={isLoading} refetchFn={refetch} lastUpdatedAt={dataUpdatedAt} />
     )
 }

@@ -1,45 +1,47 @@
 "use client";
-
-import { CheckCircle, ListCheck, Loader2, XCircle } from 'lucide-react'
-import MetricCard from './MetricCard'
-import { JSX } from 'react';
-import { MetricKey } from '@repo/types';
 import useJobMetrics from '@/hooks/useJobMetrics';
+import { MetricKey } from '@repo/types';
+import { CheckCircle, ListCheck, Loader2, LucideIcon, XCircle } from 'lucide-react';
+import MetricCard from './MetricCard';
 
 interface CardItem {
     title: string;
     datakey: MetricKey;
-    Icon: JSX.Element,
+    Icon: LucideIcon,
     footer: string;
+    classes: string;
 }
 
 const cards: CardItem[] = [
     {
         title: "Total Jobs",
         datakey: "total",
-        Icon: <ListCheck className='size-4' />,
+        Icon: ListCheck,
         footer: "All time",
+        classes: "size-4"
     },
     {
         title: "Completed",
         datakey: "completed",
-        Icon: <CheckCircle className='size-4 text-green-700' />,
+        Icon: CheckCircle,
         footer: "Successfully processed",
+        classes: "size-4 text-green-700"
     },
     {
         title: "Processing",
         datakey: "processing",
-        Icon: <Loader2 className='size-4 text-blue-600' />,
+        Icon: Loader2,
         footer: "Currently active",
+        classes: "size-4 text-blue-600"
     },
     {
         title: "Failed",
         datakey: "failed",
-        Icon: <XCircle className='size-4 text-red-800' />,
+        Icon: XCircle,
         footer: "Requires retry",
+        classes: "size-4 text-red-800"
     },
 ]
-
 
 
 export default function MetricCards() {
@@ -51,8 +53,8 @@ export default function MetricCards() {
                 last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-IN")}
             </div>
             <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-                {cards.map(({ Icon, footer, datakey, title }, idx) =>
-                    <MetricCard icon={Icon} footer={footer} title={title} key={idx} value={data?.[datakey]} />
+                {cards.map(({ Icon, footer, datakey, title, classes }, idx) =>
+                    <MetricCard dataKey={datakey} Icon={Icon} classes={classes} footer={footer} title={title} key={datakey} value={data?.[datakey]} />
                 )}
             </div>
         </div>
