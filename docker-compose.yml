@@ -1,4 +1,15 @@
 services:
+  worker:
+    build:
+      dockerfile: ./Docker/Dockerfile.worker
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./apps/worker/.env
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: postgres:17
     container_name: postgres
@@ -43,7 +54,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 

@@ -42,7 +42,7 @@ async function sendHeartBeat() {
     const heartBeatData: WorkerData = {
         workerId,
         status: currentJobId ? "RUNNING" : "IDLE",
-        currentJobId: currentJobId || "",
+        currentJobId: currentJobId,
         cpu: cpuUsage,
         memoryUsed: memUsageMB,
         heartBeatAt: Date.now()
@@ -218,6 +218,6 @@ const worker = new Worker("transcoding-q", processVideo, {
     connection: redisConnection.options
 });
 
-setInterval(sendHeartBeat, 5000);
+setInterval(sendHeartBeat, 10000);
 
 console.log("worker running ...");
