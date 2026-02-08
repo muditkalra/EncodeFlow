@@ -9,8 +9,7 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { JobsColumnType } from "@/types";
 import { calculateProcessingTime, getRelativeTime, getTimediff } from "@/utils";
-import type { OutputConfigType } from "@repo/types";
-import { type JobStatus } from "@repo/types";
+import type { JobStatus, OutputConfigType } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle, CircleMinus } from "lucide-react";
 
@@ -33,6 +32,20 @@ export const columns: ColumnDef<JobsColumnType>[] = [
         id: "filename",
         accessorKey: "video.name",
         header: "Filename",
+        cell: ({ getValue, row }) => {
+            const fileName = getValue() as string;
+            const rowData = row.original;
+            return (
+                <Sheet>
+                    <SheetTrigger>
+                        <span className="underline cursor-pointer">
+                            {fileName}
+                        </span>
+                    </SheetTrigger>
+                    <JobDetails job={rowData} />
+                </Sheet>
+            )
+        }
     },
     {
         id: "filetype",
@@ -44,7 +57,7 @@ export const columns: ColumnDef<JobsColumnType>[] = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-            const value = row.getValue("status") as JobStatus;
+            const value = (row.getValue<string>("status").toLowerCase()) as JobStatus;
             return (
                 <JobStatusBadge value={value} />
             )

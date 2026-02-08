@@ -1,12 +1,14 @@
 "use client";
 import useJobMetrics from '@/hooks/useJobMetrics';
-import { MetricKey } from '@repo/types';
-import { CheckCircle, ListCheck, Loader2, LucideIcon, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { JobMetricStatus } from '@repo/types';
+import { CheckCircle, ListCheck, Loader2, LucideIcon, RotateCw, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import MetricCard from './MetricCard';
 
 interface CardItem {
     title: string;
-    datakey: MetricKey;
+    status: JobMetricStatus;
     Icon: LucideIcon,
     footer: string;
     classes: string;
@@ -15,46 +17,63 @@ interface CardItem {
 const cards: CardItem[] = [
     {
         title: "Total Jobs",
-        datakey: "total",
+        status: "total",
         Icon: ListCheck,
         footer: "All time",
         classes: "size-4"
     },
     {
         title: "Completed",
-        datakey: "completed",
+        status: "completed",
         Icon: CheckCircle,
         footer: "Successfully processed",
         classes: "size-4 text-green-700"
     },
     {
         title: "Processing",
-        datakey: "processing",
+        status: "processing",
         Icon: Loader2,
         footer: "Currently active",
         classes: "size-4 text-blue-600"
     },
     {
         title: "Failed",
-        datakey: "failed",
+        status: "failed",
         Icon: XCircle,
         footer: "Requires retry",
         classes: "size-4 text-red-800"
     },
 ]
 
+// const data: MetricData = {
+//     total: Math.floor(20 * Math.random()),
+//     completed: 3,
+//     processing: 1,
+//     failed: 1,
+//     pending: 0
+// }
 
 export default function MetricCards() {
-    const { data, dataUpdatedAt } = useJobMetrics();
+    const { data, dataUpdatedAt, refetch } = useJobMetrics();
+    const [fetching, setFetching] = useState<boolean>(false);
+
+    const handleRefetching = () => {
+        setFetching(true);
+        refetch();
+        setTimeout(() => setFetching(false), 800);
+    };
 
     return (
         <div className="space-y-1.5">
-            <div className="text-muted-foreground text-right text-xs">
-                last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-IN")}
+            <div className="flex justify-end gap-2 items-center">
+                <div className="text-muted-foreground text-xs">
+                    last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-IN")}
+                </div>
+                <RotateCw className={cn('size-3.5 text-accent-foreground', fetching ? "animate-spin" : "")} onClick={handleRefetching} />
             </div>
             <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-                {cards.map(({ Icon, footer, datakey, title, classes }, idx) =>
-                    <MetricCard dataKey={datakey} Icon={Icon} classes={classes} footer={footer} title={title} key={datakey} value={data?.[datakey]} />
+                {cards.map(({ Icon, footer, status, title, classes }, idx) =>
+                    <MetricCard status={status} Icon={Icon} classes={classes} footer={footer} title={title} key={status} value={data?.[status]} />
                 )}
             </div>
         </div>

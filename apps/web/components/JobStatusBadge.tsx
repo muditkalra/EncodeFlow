@@ -7,8 +7,8 @@ import { Badge } from './ui/badge';
 export default function JobStatusBadge({ value }: { value: JobStatus }) {
     const jobStatusColor = jobStatusBadgeColor[value];
     return (
-        <Badge className={cn(jobStatusColor)}>
-            {value.charAt(0).toLocaleUpperCase() + value.slice(1).toLocaleLowerCase()}
+        <Badge className={cn(jobStatusColor, "capitalize")}>
+            {value}
         </Badge>
     )
 }

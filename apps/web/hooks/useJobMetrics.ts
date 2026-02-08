@@ -1,10 +1,10 @@
 import { API_URL } from "@/utils";
-import { MetricData } from "@repo/types";
+import { JobMetricData } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export default function useJobMetrics() {
-    return useQuery<MetricData>({
+    return useQuery<JobMetricData>({
         queryKey: ["jobMetricsData"],
         queryFn: () => axios.get(`${API_URL}/metricData`).then(res => res.data),
         refetchInterval: 1000 * 60, // every minute

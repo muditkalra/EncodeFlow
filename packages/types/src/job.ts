@@ -12,6 +12,10 @@ export interface ActiveJob {
     createdAt: string;
 }
 
-export type JobStatus = Status;
+export type JobStatus = Lowercase<Status>;
+
+export type JobMetricStatus = JobStatus | "total";
+
+export type JobMetricData = Record<JobMetricStatus, number>;
 
 export type JobType = Job

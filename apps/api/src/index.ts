@@ -1,9 +1,8 @@
 import { prismaClient } from "@repo/db";
 import { GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { MetricData, MetricKey, WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
+import { JobMetricData, JobMetricStatus, WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config();
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import { awsS3TempBucketName, transcodedBucketName } from "./config/constants";
@@ -13,6 +12,7 @@ import { parseS3Url, redisConnection, s3Client, videoQueue } from "./utils";
 const app = express();
 const port = process.env.PORT || 8000;
 
+dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
@@ -199,7 +199,7 @@ app.get('/metricData', async (req: Request, res: Response) => {
             }
         });
 
-        const metricsData: MetricData = {
+        const metricsData: JobMetricData = {
             total: 0,
             completed: 0,
             processing: 0,
@@ -209,7 +209,7 @@ app.get('/metricData', async (req: Request, res: Response) => {
 
         statusCounts.forEach((statusCount) => {
             const count = statusCount._count.status;
-            const status = statusCount.status.toLocaleLowerCase() as MetricKey;
+            const status = statusCount.status.toLowerCase() as JobMetricStatus;
             metricsData[status] += count;
             metricsData.total += count;
         });

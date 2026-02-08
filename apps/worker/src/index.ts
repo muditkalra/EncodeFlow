@@ -1,10 +1,9 @@
 import { Worker } from "@repo/bullq";
 import { prismaClient, Status } from "@repo/db";
 import { GetObjectCommand, PutObjectCommand } from "@repo/s3";
-import { formatDefaults, WorkerData, type VideoTask } from "@repo/types";
+import { formatDefaults, type VideoTask } from "@repo/types";
 import { spawn } from "child_process";
 import dotenv from "dotenv";
-dotenv.config();
 import ffmpegPath from "ffmpeg-static";
 import fs from "fs";
 import os from "os";
@@ -12,8 +11,9 @@ import path from "path";
 import { pipeline } from "stream/promises";
 import { transcodedBucketName } from "./config/constants";
 import { createFFmpegArgs } from "./ffmpeg";
+import { WorkerMonitor } from "./monitor";
 import { calculateProgress, redisConnection, s3Client } from "./utils";
-
+dotenv.config();
 
 
 async function startTranscodingDBNotify(jobId: string) {
@@ -31,39 +31,38 @@ async function startTranscodingDBNotify(jobId: string) {
     }
 }
 
-let currentJobId: string | null = null;
-
 // Status of worker health;
 const workerId = `worker:${os.hostname()}:${process.pid}`;
-async function sendHeartBeat() {
-    const cpuUsage = process.cpuUsage().user;
-    const memUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
+const workerMonitor = new WorkerMonitor(workerId);
 
-    const heartBeatData: WorkerData = {
-        workerId,
-        status: currentJobId ? "RUNNING" : "IDLE",
-        currentJobId: currentJobId,
-        cpu: cpuUsage,
-        memoryUsed: memUsageMB,
-        heartBeatAt: Date.now()
-    }
+// let currentJobId: string | null = null;
+// async function sendHeartBeat() {
+//     const cpuUsage = process.cpuUsage().user;
+//     const memUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
 
-    await redisConnection.hset(workerId, heartBeatData);
-    //setting expiry for the worker-id
-    await redisConnection.expire(workerId, 15); // 15s
+//     const heartBeatData: WorkerData = {
+//         workerId,
+//         status: currentJobId ? "RUNNING" : "IDLE",
+//         currentJobId: currentJobId,
+//         cpu: cpuUsage,
+//         memoryUsed: memUsageMB,
+//         heartBeatAt: Date.now()
+//     }
 
-    await redisConnection.sadd("known_workers", workerId);
-}
+//     await redisConnection.hset(workerId, heartBeatData);
+//     //setting expiry for the worker-id
+//     await redisConnection.expire(workerId, 15); // 15s
 
+//     await redisConnection.sadd("known_workers", workerId);
+// }
 
-// s3client;
-// const s3Client = creates3Client("ap-south-1");
 
 async function processVideo(job: { data: VideoTask }) {
     // here id is db-jobId and bullmq-id;
     const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution } } = job.data;
 
-    currentJobId = dbJobId;
+    // currentJobId = dbJobId;
+    workerMonitor.setCurrentJobId(dbJobId);
 
     let lastProgress = 0; // storing last progress in memory, used for comparing progress.
 
@@ -87,7 +86,7 @@ async function processVideo(job: { data: VideoTask }) {
     } catch (error) {
         throw new Error("failed to created tmp folder");
     } finally {
-        currentJobId = null;
+        workerMonitor.setCurrentJobId(null);
     }
 
     const inputFileExtension = fileType.split("/")[1]; // ex- video/mp4, video/webm etc
@@ -209,7 +208,7 @@ async function processVideo(job: { data: VideoTask }) {
             fs.unlinkSync(localOutput);
             console.log("unlinked output file");
         };
-        currentJobId = null;
+        workerMonitor.setCurrentJobId(null);
     }
 }
 
@@ -218,6 +217,6 @@ const worker = new Worker("transcoding-q", processVideo, {
     connection: redisConnection.options
 });
 
-setInterval(sendHeartBeat, 10000);
+setInterval(workerMonitor.sendHeartBeat, 10000);
 
 console.log("worker running ...");
