@@ -1,6 +1,6 @@
 import { prismaClient } from "@repo/db";
 import { GetObjectCommand, getSignedUrl, HeadObjectCommand, PutObjectCommand } from "@repo/s3";
-import { JobMetricData, JobMetricStatus, WorkerData, type TranscodeJobBody, type VideoTask } from "@repo/types";
+import { JobMetricData, JobMetricStatus, WorkerData, WorkerMetricData, type TranscodeJobBody, type VideoTask } from "@repo/types";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
@@ -190,7 +190,7 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     }
 });
 
-app.get('/metricData', async (req: Request, res: Response) => {
+app.get('/jobmetricsdata', async (req: Request, res: Response) => {
     try {
         const statusCounts = await prismaClient.job.groupBy({
             by: ["status"],
@@ -199,7 +199,7 @@ app.get('/metricData', async (req: Request, res: Response) => {
             }
         });
 
-        const metricsData: JobMetricData = {
+        const jobMetricsData: JobMetricData = {
             total: 0,
             completed: 0,
             processing: 0,
@@ -210,11 +210,11 @@ app.get('/metricData', async (req: Request, res: Response) => {
         statusCounts.forEach((statusCount) => {
             const count = statusCount._count.status;
             const status = statusCount.status.toLowerCase() as JobMetricStatus;
-            metricsData[status] += count;
-            metricsData.total += count;
+            jobMetricsData[status] += count;
+            jobMetricsData.total += count;
         });
 
-        return res.status(200).json(metricsData);
+        return res.status(200).json(jobMetricsData);
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
@@ -281,32 +281,31 @@ app.post('/download-file-url', async (req: Request, res: Response) => {
 });
 
 // getting workers status;
-app.get("/workers-status", async (req: Request, res: Response) => {
+app.get("/workersmetricdata", async (req: Request, res: Response) => {
     try {
-        const workers = [];
+        const workers: WorkerData[] = [];
         const workersId = await redisConnection.smembers("known_workers");
 
         for (const workerId of workersId) {
-            const raw = await redisConnection.hgetall(workerId);
+            const data = (await redisConnection.hgetall(workerId)) as unknown as WorkerData;
 
-            if (!raw || Object.keys(raw).length === 0) {
+            if (!data || Object.keys(data).length === 0) {
                 await redisConnection.srem("known_workers", workerId);
                 continue;
             }
-            const rawData = raw as unknown as WorkerData;
+            workers.push(data);
+        }
+        const totalMem = workers.reduce((acc, w) => acc += w.memoryLimit, 0);
 
-            const worker: WorkerData = {
-                workerId: rawData.workerId,
-                status: rawData.status,
-                currentJobId: rawData.currentJobId == "" ? null : rawData.currentJobId,
-                cpu: parseFloat(`${rawData.cpu}`),
-                memoryUsed: parseInt(`${rawData.memoryUsed}`),
-                heartBeatAt: parseInt(`${rawData.heartBeatAt}`),
-            }
-            workers.push(worker);
+        const workersMetricData: WorkerMetricData = {
+            total: workers.length,
+            running: workers.filter((w) => w.status == "RUNNING").length,
+            idle: workers.filter((w) => w.status == "IDLE").length,
+            cpu: workers.reduce((acc, w) => acc += w.cpu, 0) / workers.length,
+            mem: workers.reduce((acc, w) => acc += w.memoryUsed, 0) / totalMem
         }
 
-        return res.status(200).json(workers);
+        return res.status(200).json(workersMetricData);
     } catch (error) {
         console.log(error);
         res.status(400).json(error);

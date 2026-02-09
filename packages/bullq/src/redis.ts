@@ -1,4 +1,5 @@
 import Redis from "ioredis";
+export type { Redis } from "ioredis";
 
 export const createRedisConnection = (url: string) => {
     return new Redis(url, {

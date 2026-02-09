@@ -1,9 +1,12 @@
+"use client";
+import { WorkerMetricKeys } from '@repo/types';
 import { Activity, Cpu, LucideIcon, MemoryStick, Pause, Server } from 'lucide-react';
 import WorkerCard from './WorkerCard';
+import useWorkerMetrics from '@/hooks/useWorkerMetrics';
 
 interface CardItem {
     title: string;
-    dataKey: string; // change to pre-defined keys;
+    dataKey: WorkerMetricKeys; // change to pre-defined keys;
     Icon: LucideIcon;
     footer: string;
     classes: string;
@@ -47,30 +50,26 @@ const cards: CardItem[] = [
     }
 ]
 
-
-const data = {
-    total: 5,
-    running: 2,
-    idle: 3,
-    cpu: 28,
-    mem: 12
-}
-
+// const data = {
+//     total: 5,
+//     running: 2,
+//     idle: 3,
+//     cpu: 1.8,
+//     mem: 12
+// }
 
 export default function WorkerCards() {
+    const { data, dataUpdatedAt } = useWorkerMetrics();
     return (
         <div className="space-y-1.5">
-            {/* <div className="flex justify-end gap-2 items-center">
+            <div className="flex justify-end gap-2 items-center">
                 <div className="text-muted-foreground text-xs">
                     last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-IN")}
                 </div>
-                <RotateCw className={cn('size-3.5 text-accent-foreground', fetching ? "animate-spin" : "")} onClick={handleRefetching} />
-            </div> */}
-            <div className="grid gap-2 grid-cols-2 md:grid-cols-5">
+            </div>
+            <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                 {cards.map(({ Icon, footer, title, classes, dataKey }, idx) =>
-                    // <div className={cn(idx % 2 ? "col-span-2" : "")}>
-                    <WorkerCard Icon={Icon} classes={classes} footer={footer} title={title} key={idx} value={data["running"]} />
-                    // </div>
+                    <WorkerCard Icon={Icon} classes={classes} footer={footer} title={title} key={idx} value={data?.[dataKey]} />
                 )}
             </div>
         </div>
