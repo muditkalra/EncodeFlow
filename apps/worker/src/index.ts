@@ -61,7 +61,6 @@ async function processVideo(job: { data: VideoTask }) {
     // here id is db-jobId and bullmq-id;
     const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution } } = job.data;
 
-    // currentJobId = dbJobId;
     workerMonitor.setCurrentJobId(dbJobId);
 
     let lastProgress = 0; // storing last progress in memory, used for comparing progress.
@@ -84,9 +83,8 @@ async function processVideo(job: { data: VideoTask }) {
     try {
         await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
     } catch (error) {
-        throw new Error("failed to created tmp folder");
-    } finally {
         workerMonitor.setCurrentJobId(null);
+        throw new Error("failed to created tmp folder");
     }
 
     const inputFileExtension = fileType.split("/")[1]; // ex- video/mp4, video/webm etc
@@ -217,6 +215,6 @@ const worker = new Worker("transcoding-q", processVideo, {
     connection: redisConnection.options
 });
 
-setInterval(workerMonitor.sendHeartBeat, 10000);
+setInterval(workerMonitor.sendHeartBeat, 5000);
 
 console.log("worker running ...");
