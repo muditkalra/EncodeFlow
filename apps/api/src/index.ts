@@ -7,7 +7,7 @@ import express, { Request, Response } from "express";
 import morgan from "morgan";
 import { awsS3TempBucketName, transcodedBucketName } from "./config/constants";
 import queueEventsListeners from "./events";
-import { parseS3Url, redisConnection, s3Client, videoQueue } from "./utils";
+import { parseS3Url, redisClient, s3Client, videoQueue } from "./utils";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -190,6 +190,7 @@ app.get("/jobs/active", async (req: Request, res: Response) => {
     }
 });
 
+// gives count of jobs based on their status;
 app.get('/jobmetricsdata', async (req: Request, res: Response) => {
     try {
         const statusCounts = await prismaClient.job.groupBy({
@@ -239,21 +240,22 @@ app.get("/all-jobs", async (req: Request, res: Response) => {
     }
 });
 
+// gives all the video entries
 app.get("/all-videos", async (req: Request, res: Response) => {
     try {
-        const alljobs = await prismaClient.video.findMany({
+        const allVideos = await prismaClient.video.findMany({
             orderBy: {
                 createdAt: "desc"
             }
         })
-        return res.status(200).json(alljobs);
+        return res.status(200).json(allVideos);
     } catch (error) {
         console.log(error);
         return res.status(400).json(error);
     }
 });
 
-// getting download url for the 
+// getting direct-download url for the input and output file
 app.post('/download-file-url', async (req: Request, res: Response) => {
     try {
         const { url, bucket } = req.body as { url: string, bucket: "original" | "output" };
@@ -284,13 +286,13 @@ app.post('/download-file-url', async (req: Request, res: Response) => {
 app.get("/workersmetricdata", async (req: Request, res: Response) => {
     try {
         const workers: WorkerData[] = [];
-        const workersId = await redisConnection.smembers("known_workers");
+        const workersId = await redisClient.smembers("known_workers");
 
         for (const workerId of workersId) {
-            const data = (await redisConnection.hgetall(workerId)) as unknown as WorkerData;
+            const data = (await redisClient.hgetall(workerId)) as unknown as WorkerData;
 
             if (!data || Object.keys(data).length === 0) {
-                await redisConnection.srem("known_workers", workerId);
+                await redisClient.srem("known_workers", workerId);
                 continue;
             }
             workers.push(data);
@@ -309,6 +311,28 @@ app.get("/workersmetricdata", async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+    }
+})
+
+// gives data about all the workers currently alive
+app.get("/allworkers", async (req: Request, res: Response) => {
+    try {
+        const workers: WorkerData[] = [];
+        const workersId = await redisClient.smembers("known_workers");
+
+        for (const workerId of workersId) {
+            const data = (await redisClient.hgetall(workerId)) as unknown as WorkerData;
+
+            if (!data || Object.keys(data).length === 0) {
+                await redisClient.srem("known_workers", workerId);
+                continue;
+            }
+            workers.push(data);
+        }
+        return res.status(200).json(workers);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
     }
 })
 
