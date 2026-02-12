@@ -1,11 +1,10 @@
 "use client";
 
+import { DataTable } from '@/components/data-table';
+import useJobsTable from '@/hooks/useJobsTable';
 import { JobsColumnType } from '@/types';
-import { API_URL } from '@/utils/constants';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { columns } from './columns';
-import { DataTable } from './data-table';
+
 
 
 const dummyData: JobsColumnType[] = [
@@ -245,15 +244,32 @@ const dummyData: JobsColumnType[] = [
     }
 ]
 
-export default function JobsClient() {
-    const { data, isLoading, refetch, dataUpdatedAt } = useQuery<JobsColumnType[]>({
-        queryKey: ["alljobs"],
-        queryFn: () => axios.get(`${API_URL}/all-jobs`).then(res => res.data),
-        refetchInterval: 1000 * 60, // polling every minute
-    });
-
-
+export default function JobTableClient() {
+    const { data, isLoading, refetch, dataUpdatedAt } = useJobsTable();
     return (
-        <DataTable columns={columns} data={data || []} loading={isLoading} refetchFn={refetch} lastUpdatedAt={dataUpdatedAt} />
+        <DataTable
+            columns={columns}
+            data={data || []}
+            loading={isLoading}
+            toolBar={{
+                refetch: {
+                    fn: refetch,
+                    lastUpdatedAt: dataUpdatedAt
+                },
+                search: {
+                    field: "filename",
+                    placeholder: "Search Filename"
+                },
+                columnVisibilty: true
+            }}
+            initialColumnVisibility={{
+                filetype: false,
+                errorMessage: false,
+                outputFormat: false,
+                outputResolution: false,
+                includeAudio: false,
+            }}
+            showPagination
+        />
     )
 }

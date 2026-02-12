@@ -2,10 +2,10 @@
 
 import { JobsColumnType } from '@/types';
 import { calculateProcessingTime, formatTime, getFileSizeWithUnit } from '@/utils';
-import { OutputConfigType } from '@repo/types';
+import { JobStatus, OutputConfigType } from '@repo/types';
 import { CheckCircle, CircleMinus, FileVideoCamera } from 'lucide-react';
 import DownloadButton from './DownloadButton';
-import JobStatusBadge from './JobStatusBadge';
+import StatusBadge from './StatusBadge';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
@@ -42,7 +42,7 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                 Status
                             </div>
                             <div className="">
-                                <JobStatusBadge value={job.status} />
+                                <StatusBadge value={job.status.toLocaleLowerCase() as JobStatus} />
                             </div>
                         </div>
 

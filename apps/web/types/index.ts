@@ -1,4 +1,4 @@
-import { JobStatus, JobType, VideoType } from "@repo/types";
+import { JobStatus, JobType, VideoType, WorkerStatus } from "@repo/types";
 
 export type UploadState = "IDLE" | "FILE_SELECTED" | "FETCHINGURL" | "UPLOADING" | "PROCESSING" | "COMPLETED" | "FAILED";
 
@@ -9,11 +9,15 @@ export interface VideoDetail {
     height: number;
 }
 
-export const jobStatusBadgeColor: Record<JobStatus, string> = {
+export type BadgeKeys = JobStatus | Lowercase<WorkerStatus>
+
+export const badgeColors: Record<BadgeKeys, string> = {
     pending: "bg-amber-50 text-amber-700 ring ring-amber-500 dark:bg-amber-950/30 dark:text-amber-500 dark:ring-amber-500",
     completed: "bg-green-50 text-green-700 ring ring-green-500 dark:bg-green-900/20 dark:text-green-500 dark:ring-green-400",
     failed: "bg-red-50 text-red-700 ring ring-red-500 dark:bg-red-950/20 dark:text-red-400 dark:ring-red-400",
-    processing: "bg-blue-50 text-blue-700 ring ring-blue-500 dark:bg-blue-950/20 dark:text-blue-400 dark:ring-blue-400"
+    processing: "bg-blue-50 text-blue-700 ring ring-blue-500 dark:bg-blue-950/20 dark:text-blue-400 dark:ring-blue-400",
+    idle: "bg-amber-50 text-amber-700 ring ring-amber-500 dark:bg-amber-950/30 dark:text-amber-500 dark:ring-amber-500",
+    running: "bg-green-50 text-green-700 ring ring-green-500 dark:bg-green-900/20 dark:text-green-500 dark:ring-green-400"
 }
 
 export type JobsColumnType = JobType & {

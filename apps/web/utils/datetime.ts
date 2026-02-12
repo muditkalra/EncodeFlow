@@ -61,7 +61,7 @@ export function calculateProcessingTime(endTime: Date | null, startTime: Date | 
  * 
  * @param endTime 
  * @param startTime 
- * @returns in millieconds;
+ * @returns in milliseconds;
  */
 export function getTimediff(endTime: Date | number | string, startTime: Date | number | string) {
     return new Date(endTime).getTime() - new Date(startTime).getTime();

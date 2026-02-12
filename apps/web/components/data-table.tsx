@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { getRelativeTime } from "@/utils";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -17,12 +17,23 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     loading: boolean,
-    refetchFn: () => void,
-    lastUpdatedAt: number;
+    initialColumnVisibility?: VisibilityState
+    showPagination?: boolean
+    toolBar?: {
+        refetch?: {
+            fn?: () => void,
+            lastUpdatedAt?: number,
+        },
+        search?: {
+            field: string;
+            placeholder: string
+        },
+        columnVisibilty?: boolean
+    }
 }
 
 
-export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, lastUpdatedAt }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, loading, initialColumnVisibility, toolBar, showPagination }: DataTableProps<TData, TValue>) {
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -58,13 +69,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
         getPaginationRowModel: getPaginationRowModel(),
         onRowSelectionChange: setRowSelection,
         initialState: {
-            columnVisibility: {
-                filetype: false,
-                errorMessage: false,
-                outputFormat: false,
-                outputResolution: false,
-                includeAudio: false,
-            }
+            columnVisibility: initialColumnVisibility
         },
         state: {
             columnFilters,
@@ -74,6 +79,9 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
     });
 
     useEffect(() => {
+        if (!toolBar?.refetch?.lastUpdatedAt) return;
+
+        const lastUpdatedAt = toolBar.refetch.lastUpdatedAt;
         const modifyRelativeTime = () => {
             const gRT = getRelativeTime(lastUpdatedAt);
             setRelativeTime(gRT);
@@ -84,59 +92,69 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
             clearInterval(interval);
         };
 
-    }, [lastUpdatedAt]);
+    }, [toolBar?.refetch?.lastUpdatedAt]);
 
 
     const handleClick = () => {
+        if (!toolBar?.refetch?.fn) return;
         setFetching(true);
-        refetchFn();
+        toolBar.refetch.fn();
         setTimeout(() => setFetching(false), 1500);
-    }
+    };
+
+    const showToolbar = toolBar?.refetch || toolBar?.search || toolBar?.columnVisibilty;
 
     return (
         <div className="flex flex-col gap-2.5 mb-5">
-            <div className="flex justify-end gap-3 items-center">
-                {relativeTime && <div className="text-xs text-muted-foreground">
-                    Last updated: {relativeTime}
-                </div>}
-                <Input
-                    placeholder="Search Filename"
-                    value={(table.getColumn("filename")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("filename")?.setFilterValue(event.target.value)}
-                    className="max-w-sm"
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild title="select columns">
-                        <Button variant="outline" className="">
-                            Columns <ChevronDown />
+            {showToolbar &&
+                <div className="flex justify-end gap-3 items-center">
+                    {toolBar.refetch && relativeTime &&
+                        <div className="text-xs text-muted-foreground">
+                            Last updated: {relativeTime}
+                        </div>
+                    }
+                    {toolBar?.search && <Input
+                        placeholder={toolBar.search.placeholder || "Search Filename"}
+                        value={(table.getColumn(toolBar.search.field)?.getFilterValue() as string) ?? ""}
+                        onChange={(event) => table.getColumn(toolBar?.search?.field || "filename")?.setFilterValue(event.target.value)}
+                        className="max-w-sm"
+                    />}
+                    {toolBar?.columnVisibilty &&
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild title="select columns">
+                                <Button variant="outline" className="">
+                                    Columns <ChevronDown />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {table
+                                    .getAllColumns()
+                                    .map((column) => {
+                                        return (
+                                            <DropdownMenuCheckboxItem
+                                                key={column.id}
+                                                className="capitalize"
+                                                disabled={!column.getCanHide()}
+                                                checked={column.getIsVisible()}
+                                                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                                            >
+                                                {column.id}
+                                            </DropdownMenuCheckboxItem>
+                                        )
+                                    })
+                                }
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    }
+                    {toolBar?.refetch?.fn &&
+                        <Button size={"icon"} variant={"outline"} onClick={handleClick} title="refresh">
+                            <RefreshCw className={cn(!fetching ? "" : "animate-spin")} />
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                )
-                            })
-                        }
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <Button size={"icon"} variant={"outline"} onClick={handleClick} title="refresh">
-                    <RefreshCw className={cn(!fetching ? "" : "animate-spin")} />
-                </Button>
-            </div>
+                    }
+                </div>}
             <div className="overflow-hidden rounded-md border">
-                <Table className="">
-                    <TableHeader>
+                <Table>
+                    <TableHeader className="bg-card">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
@@ -155,13 +173,13 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="">
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="h-12"
+                                    className="h-16"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
@@ -179,7 +197,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, refetchFn, la
                         )}
                     </TableBody>
                 </Table>
-                <DataTablePagination table={table} />
+                {showPagination && <DataTablePagination table={table} />}
             </div>
         </div>
     )

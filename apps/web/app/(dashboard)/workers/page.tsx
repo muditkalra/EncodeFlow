@@ -1,16 +1,21 @@
 import WorkerCards from '@/components/WorkerCards'
-import React from 'react'
+import WorkerTableClient from './workerTableClient'
 
 export default function page() {
 	return (
 		<div className='px-4 py-4'>
-			<div className="text-xl">
-				Workers
+			<div className="">
+				<div className="text-xl">
+					Workers
+				</div>
+				<div className="text-xs text-muted-foreground mt-1.5 mb-6">
+					Manage monitor and scale job workers
+				</div>
 			</div>
-			<div className="text-xs text-muted-foreground mt-1.5 mb-6">
-				Manage monitor and scale job workers
+			<div className="space-y-10">
+				<WorkerCards />
+				<WorkerTableClient />
 			</div>
-			<WorkerCards />
 		</div>
 	)
 }

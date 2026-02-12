@@ -13,7 +13,7 @@ interface MetriCardProps {
     status: JobMetricStatus
 }
 
-export default function MetricCard({ title, value, Icon, footer, classes, status }: MetriCardProps) {
+export default function JobMetricCard({ title, value, Icon, footer, classes, status }: MetriCardProps) {
     return (
         <Card>
             <CardContent>

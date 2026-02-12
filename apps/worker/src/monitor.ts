@@ -65,7 +65,7 @@ export class WorkerMonitor {
         return cpuUsage;
     }
 
-    // memory usage for container
+    // memory usage for container, fallback to system memory usage
     private readMemoryUsage(): number {
         // cgroup v2
         try {

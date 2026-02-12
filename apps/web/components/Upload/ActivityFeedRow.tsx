@@ -1,5 +1,5 @@
 import { ActiveJob, JobStatus } from '@repo/types'
-import JobStatusBadge from '../JobStatusBadge'
+import StatusBadge from '../StatusBadge'
 import { Progress } from '../ui/progress'
 import { TableCell, TableRow } from '../ui/table'
 
@@ -11,7 +11,7 @@ export default function ActivityFeedRow({ job }: { job: ActiveJob }) {
                 {job.video.name}
             </TableCell>
             <TableCell>
-                <JobStatusBadge value={job.status.toLocaleLowerCase() as JobStatus} />
+                <StatusBadge value={job.status.toLocaleLowerCase() as JobStatus} />
             </TableCell>
             <TableCell className='flex items-center gap-4'>
                 <div className="w-4/5">

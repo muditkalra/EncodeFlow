@@ -2,7 +2,7 @@
 
 import DownloadButton from "@/components/DownloadButton";
 import JobDetails from "@/components/JobDetails";
-import JobStatusBadge from "@/components/JobStatusBadge";
+import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
@@ -25,8 +25,9 @@ export const columns: ColumnDef<JobsColumnType>[] = [
             />
         ),
         cell: ({ row }) => <Checkbox onCheckedChange={(value) => row.toggleSelected(!!value)} checked={row.getIsSelected()} />,
-        size: 40,
-        enableResizing: false
+        size: 25,
+        enableResizing: false,
+        enableHiding: false
     },
     {
         id: "filename",
@@ -59,7 +60,7 @@ export const columns: ColumnDef<JobsColumnType>[] = [
         cell: ({ row }) => {
             const value = (row.getValue<string>("status").toLowerCase()) as JobStatus;
             return (
-                <JobStatusBadge value={value} />
+                <StatusBadge value={value} />
             )
         }
     },

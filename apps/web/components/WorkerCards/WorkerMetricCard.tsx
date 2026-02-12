@@ -1,8 +1,6 @@
-import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
+import { JSX } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
-import { JSX } from 'react';
 
 interface WorkerCardProps {
     title: string;
@@ -13,15 +11,14 @@ interface WorkerCardProps {
 }
 
 
-export default function WorkerCard({ Icon, footer, title, value, showPercentage }: WorkerCardProps) {
+export default function WorkerMetricCard({ Icon, footer, title, value, showPercentage }: WorkerCardProps) {
     return (
         <Card className='py-5'>
             <CardContent>
                 <div>
-                    <div className="flex justify-between items-center">
-                        <p className="text-xs text-muted-foreground tracking-wide">{title}</p>
+                    <div className="flex justify-between items-center gap-1">
+                        <p className="text-xs text-muted-foreground tracking-wide font-medium">{title}</p>
                         <div className="border border-border rounded-full p-1">
-                            {/* <Icon className={cn(classes)} /> */}
                             {Icon}
                         </div>
                     </div>

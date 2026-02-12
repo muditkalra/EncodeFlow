@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { JobMetricStatus } from '@repo/types';
 import { CheckCircle, ListCheck, Loader2, LucideIcon, RotateCw, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import MetricCard from './MetricCard';
+import JobMetricCard from './JobMetricCard';
 
 interface CardItem {
     title: string;
@@ -19,7 +19,7 @@ const cards: CardItem[] = [
         title: "Total Jobs",
         status: "total",
         Icon: ListCheck,
-        footer: "All time",
+        footer: "All the jobs",
         classes: "size-4"
     },
     {
@@ -73,7 +73,7 @@ export default function MetricCards() {
             </div>
             <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
                 {cards.map(({ Icon, footer, status, title, classes }, idx) =>
-                    <MetricCard status={status} Icon={Icon} classes={classes} footer={footer} title={title} key={status} value={data?.[status]} />
+                    <JobMetricCard status={status} Icon={Icon} classes={classes} footer={footer} title={title} key={status} value={data?.[status]} />
                 )}
             </div>
         </div>

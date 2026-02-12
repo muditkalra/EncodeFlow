@@ -1,4 +1,4 @@
-import JobsClient from './jobs-client'
+import JobTableClient from './jobTableclient'
 
 export default function page() {
     return (
@@ -9,7 +9,7 @@ export default function page() {
             <div className="text-xs text-muted-foreground mt-1.5 mb-6">
                 Manage and monitor background transcoding jobs
             </div>
-            <JobsClient />
+            <JobTableClient />
         </div>
     )
 }
