@@ -8,7 +8,7 @@ export default function DashboardNavbar() {
         <nav className='flex items-center justify-between top-0 z-10 p-3.5 border-b'>
             {/* trigger and name */}
             <div className="h-5 flex items-center gap-5">
-                <SidebarTrigger />
+                <SidebarTrigger title='ctrl + b' />
                 <Separator orientation='vertical' />
                 <div className="">
                     Dashboard

@@ -1,11 +1,9 @@
 "use client";
 
-import { DataTable } from '@/components/data-table';
+import { DataTable } from '@/components/DataTable';
 import useJobsTable from '@/hooks/useJobsTable';
 import { JobsColumnType } from '@/types';
 import { columns } from './columns';
-
-
 
 const dummyData: JobsColumnType[] = [
     {

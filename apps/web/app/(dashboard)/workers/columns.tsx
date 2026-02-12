@@ -50,7 +50,7 @@ export const columns: ColumnDef<WorkerData>[] = [
         cell: ({ getValue }) => {
             const value = (getValue<string>().toLowerCase()) as Lowercase<WorkerStatus>;
             return (
-                <StatusBadge value={"running"} />
+                <StatusBadge value={value} />
             )
         }
     },

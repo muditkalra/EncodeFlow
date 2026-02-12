@@ -12,7 +12,7 @@ export default function page() {
 					Manage monitor and scale job workers
 				</div>
 			</div>
-			<div className="space-y-10">
+			<div className="space-y-8">
 				<WorkerCards />
 				<WorkerTableClient />
 			</div>

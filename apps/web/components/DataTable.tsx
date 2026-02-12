@@ -154,7 +154,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
                 </div>}
             <div className="overflow-hidden rounded-md border">
                 <Table>
-                    <TableHeader className="bg-card">
+                    <TableHeader className="bg-muted">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
@@ -179,7 +179,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="h-16"
+                                    className="h-15"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
