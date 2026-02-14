@@ -22,7 +22,7 @@ export default function WorkerMetricCard({ Icon, footer, title, value, showPerce
                             {Icon}
                         </div>
                     </div>
-                    <div className="text-3xl font-semibold mt-1">
+                    <div className="text-2xl md:text-3xl font-semibold mt-1">
                         {!Number.isNaN(Number(value)) ?
                             <div className="">
                                 {value} {showPercentage && <span className='text-sm text-muted-foreground'>%</span>}

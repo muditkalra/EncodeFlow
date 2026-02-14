@@ -209,7 +209,7 @@ app.get('/jobmetricsdata', async (req: Request, res: Response) => {
         };
 
         statusCounts.forEach((statusCount) => {
-            const count = statusCount._count.status;
+            const count = Number(statusCount._count.status);
             const status = statusCount.status.toLowerCase() as JobMetricStatus;
             jobMetricsData[status] += count;
             jobMetricsData.total += count;
@@ -297,14 +297,14 @@ app.get("/workersmetricdata", async (req: Request, res: Response) => {
             }
             workers.push(data);
         }
-        const totalMem = workers.reduce((acc, w) => acc += w.memoryLimit, 0);
+        const totalMem = workers.reduce((acc, w) => acc += Number(w.memoryLimit), 0);
 
         const workersMetricData: WorkerMetricData = {
             total: workers.length,
             running: workers.filter((w) => w.status == "RUNNING").length,
             idle: workers.filter((w) => w.status == "IDLE").length,
-            cpu: workers.reduce((acc, w) => acc += w.cpu, 0) / workers.length,
-            mem: workers.reduce((acc, w) => acc += w.memoryUsed, 0) / totalMem
+            cpu: workers.reduce((acc, w) => acc += Number(w.cpu), 0) / workers.length,
+            mem: workers.reduce((acc, w) => acc += Number(w.memoryUsed), 0) / totalMem
         }
 
         return res.status(200).json(workersMetricData);

@@ -2,13 +2,15 @@ services:
   worker:
     build:
       dockerfile: ./Docker/Dockerfile.worker
-    container_name: worker
+    # container_name: worker
     mem_limit: 512m
     cpus: 0.5
     environment:
       NODE_ENV: production
     env_file:
       - ./apps/worker/.env
+    # deploy:
+    #   replicas: 1    
     depends_on:
       postgres:
         condition: service_healthy

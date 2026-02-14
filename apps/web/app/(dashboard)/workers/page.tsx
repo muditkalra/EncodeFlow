@@ -3,7 +3,7 @@ import WorkerTableClient from './workerTableClient'
 
 export default function page() {
 	return (
-		<div className='px-4 py-4'>
+		<div className='px-6 py-4'>
 			<div className="">
 				<div className="text-xl">
 					Workers
