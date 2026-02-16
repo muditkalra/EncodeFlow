@@ -53,7 +53,7 @@ const cards: CardItem[] = [
 //     pending: 0
 // }
 
-export default function MetricCards() {
+export default function JobMetricCards() {
     const { data, dataUpdatedAt, refetch } = useJobMetrics();
     const [fetching, setFetching] = useState<boolean>(false);
 

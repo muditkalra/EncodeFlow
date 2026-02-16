@@ -50,7 +50,7 @@ export default function page() {
 					USERNAME 
 				</div>
 				<div className="text-xs text-muted-foreground mt-1.5">
-					Manage your details and personal perferences here.
+					Manage your account settings and personal perferences.
 				</div>
 			</div>
 			<Tabs defaultValue={items[0]?.value} className=''>
@@ -64,7 +64,7 @@ export default function page() {
 				</TabsList>
 				{
 					items.map(({ value, Comp }, idx) => (
-						<TabsContent value={value} key={idx} className='p-6 mb-5'>
+						<TabsContent value={value} key={idx} className='p-6 mb-5' >
 							<Comp />
 						</TabsContent>
 					))

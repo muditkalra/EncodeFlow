@@ -4,16 +4,16 @@ import { formatToPercent } from '@/utils';
 import { Activity, Cpu, MemoryStick, Pause, Server } from 'lucide-react';
 import WorkerMetricCard from './WorkerMetricCard';
 
-const data = {
-    total: 5,
-    running: 2,
-    idle: 3,
-    cpu: 1.8,
-    mem: 12
-}
+// const data = {
+//     total: 5,
+//     running: 2,
+//     idle: 3,
+//     cpu: 1.8,
+//     mem: 12
+// }
 
-export default function WorkerCards() {
-    // const { data } = useWorkerMetrics();
+export default function WorkerMetricCards() {
+    const { data } = useWorkerMetrics();
     return (
         <div className="grid gap-x-1.5 gap-y-2 xl:gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-5">
             <div className="col-span-1 md:col-span-2 lg:col-span-1">

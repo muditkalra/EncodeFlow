@@ -1,4 +1,4 @@
-import WorkerCards from '@/components/WorkerCards'
+import WorkerMetricCards from '@/components/WorkerMetricCards'
 import WorkerTableClient from './workerTableClient'
 
 export default function page() {
@@ -13,7 +13,7 @@ export default function page() {
 				</div>
 			</div>
 			<div className="space-y-8">
-				<WorkerCards />
+				<WorkerMetricCards />
 				<WorkerTableClient />
 			</div>
 		</div>

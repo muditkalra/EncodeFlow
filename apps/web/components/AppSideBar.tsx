@@ -48,23 +48,24 @@ const items: Item[] = [
 
 export default function AppSideBar() {
 	const pathname = usePathname();
-	const isActive = (href: string) => pathname == href;
+	const isActive = (href: string) => pathname == href || pathname.startsWith(href) && href !== "/";
 
 	return (
-		<Sidebar>
+		<Sidebar collapsible='icon'>
 			<SidebarHeader className="py-4">
 				<SidebarMenu>
-					<SidebarMenuItem >
+					<SidebarMenuItem>
 						<SidebarMenuButton asChild>
 							<Link href={"/"}>
 								{/* <Logo size={110} /> */}
 								{/* <Image src="/logo3.png" alt='logo' width={100} height={100} /> */}
-								<span>video transcoder icon</span>
+								<span>Video Transcoder</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>
+
 			<SidebarContent className='mt-1'>
 				{items.map(({ Icon, title, url }) => (
 					<SidebarGroup className='py-1.5' key={title}>
