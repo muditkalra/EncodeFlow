@@ -336,6 +336,31 @@ app.get("/allworkers", async (req: Request, res: Response) => {
     }
 })
 
+
+app.get('/worker/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        if (!id) {
+            throw new Error("Cannot worker details without id");
+        }
+        const workerIdExistCheck = await redisClient.sismember("known_workers", id);
+        if (!workerIdExistCheck) {
+            throw new Error("cannot find worker with this id");
+        }
+
+        const workerData = await redisClient.hgetall(id) as unknown as WorkerData;
+
+        if (!workerData || Object.keys(workerData).length == 0) {
+            await redisClient.srem("known_workers", id);
+            throw new Error("Worker data not found. Probably Worker died");
+        }
+        return res.status(200).json(workerData);
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Cannot Complete the Request";
+        return res.status(400).json({ error: errorMessage });
+    }
+})
+
 const start = () => {
     try {
         app.listen(port, () => {
