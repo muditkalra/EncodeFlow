@@ -23,7 +23,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
             const response = await axios.post(`${API_URL}/download-file-url`, { url, bucket: buttonType });
 
             const elapsed = Date.now() - startTime;
-            const minDuration = 500 // 500ms to show loading;
+            const minDuration = 300 // 300ms to show loading;
 
             if (elapsed < minDuration) { // artificially slowing response as this query is being executed in (1-5)ms and ui looking flashy;
                 await new Promise((resolve) => setTimeout(resolve, minDuration - elapsed));
@@ -32,7 +32,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
             return response.data;
         },
         onSuccess: () => {
-            toast.success("Downloading Started...");
+            toast.success("Downloading Initiated...");
         },
         onError: (error) => {
             toast.error(error.message);

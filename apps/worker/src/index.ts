@@ -84,6 +84,7 @@ async function processVideo(job: { data: VideoTask }) {
         await fs.promises.mkdir(dir, { recursive: true }); //ensures dir is created;
     } catch (error) {
         workerMonitor.setCurrentJobId(null);
+        workerMonitor.setJobStage(null);
         throw new Error("failed to created tmp folder");
     }
 
@@ -97,6 +98,7 @@ async function processVideo(job: { data: VideoTask }) {
         console.log(`[${dbJobId}] Starting job: ${bucketName}/${fileName} for config -> ${JSON.stringify({ format, includeAudio, resolution })}`);
 
         // downloading from s3
+        workerMonitor.setJobStage("downloading");
         console.log(`[${dbJobId}] Downloading file...`);
         const command = new GetObjectCommand({ Bucket: bucketName, Key: fileName });
         const s3Resp = await s3Client.send(command);
@@ -113,6 +115,7 @@ async function processVideo(job: { data: VideoTask }) {
 
 
         // transcoding
+        workerMonitor.setJobStage("transcoding");
         console.log(`[${dbJobId}] Transcoding ...`);
         await startTranscodingDBNotify(dbJobId); // db notify --> processing started;
 
@@ -146,8 +149,8 @@ async function processVideo(job: { data: VideoTask }) {
         })
 
         // uploading back to s3;
+        workerMonitor.setJobStage("uploading");
         console.log(`uploading transcoded file ${dbJobId}_${fileName}_${resolution} to s3 `);
-
         const outputKey = `${dbJobId}.${outputFileExtension}`;
 
         const fileStream = fs.createReadStream(localOutput);
@@ -207,6 +210,7 @@ async function processVideo(job: { data: VideoTask }) {
             console.log("unlinked output file");
         };
         workerMonitor.setCurrentJobId(null);
+        workerMonitor.setJobStage(null);
     }
 }
 

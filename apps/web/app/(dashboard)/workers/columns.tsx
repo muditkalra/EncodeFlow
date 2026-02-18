@@ -1,10 +1,13 @@
 "use client";
 
 import StatusBadge from "@/components/StatusBadge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import useRelativeTime from "@/hooks/useRelativeTime";
 import { formatToPercent } from "@/utils";
 import type { WorkerData, WorkerStatus } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 
 export const columns: ColumnDef<WorkerData>[] = [
@@ -25,21 +28,12 @@ export const columns: ColumnDef<WorkerData>[] = [
     {
         header: "WorkerId",
         accessorKey: "workerId",
-        cell: ({ getValue, row }) => {
+        cell: ({ getValue }) => {
             const workerId = getValue() as string;
-            // const rowData = row.original;
             return (
-                // <Sheet>
-                //     <SheetTrigger>
-                //         <span className="underline cursor-pointer">
-                //             {fileName}
-                //         </span>
-                //     </SheetTrigger>
-                //     <JobDetails job={rowData} />
-                // </Sheet>
-                <span className="underline cursor-pointer">
+                <Link href={`/workers/${workerId}`} className="hover:underline">
                     {workerId}
-                </span>
+                </Link>
             )
         }
     },
@@ -57,7 +51,7 @@ export const columns: ColumnDef<WorkerData>[] = [
     {
         id: "currentJobId",
         accessorKey: "currentJobId",
-        header: "Current-JobId",
+        header: "JobId",
         cell: ({ getValue }) => (getValue() || "-")
     },
     {
@@ -95,35 +89,29 @@ export const columns: ColumnDef<WorkerData>[] = [
     },
     {
         accessorKey: "heartBeatAt",
-        header: "HeartBeatAt",
+        header: "Heartbeat At",
         cell: ({ getValue }) => {
-            const time = Number(getValue<number>());
+            const value = Number(getValue<number>());
+            const relativeTime = useRelativeTime(Number(value));
             return (
-                <div title={new Date(time).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "long" })}>
-                    {new Date(time).toLocaleTimeString()}
+                <div title={new Date(value).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "long" })}>
+                    {relativeTime}
                 </div>
             )
         },
     },
-    // {
-    //     id: "actions",
-    //     cell: ({ row }) => {
-    //         const rowData = row.original;
-    //         return (
-    //             <div className="flex gap-2">
-    //                 <DownloadButton variant={"secondary"} buttonType={'output'} disabled={rowData.status !== "COMPLETED"} url={rowData.outputUrl} size={"sm"} className={cn(rowData.status !== "COMPLETED" && "invisible")}>
-    //                     Output
-    //                 </DownloadButton>
-    //                 <Sheet>
-    //                     <SheetTrigger asChild>
-    //                         <Button variant={"ghost"}>
-    //                             More details
-    //                         </Button>
-    //                     </SheetTrigger>
-    //                     <JobDetails job={rowData} />
-    //                 </Sheet>
-    //             </div>
-    //         )
-    //     }
-    // }
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const workerId = row.original.workerId;
+            return (
+                <Button variant={"link"} asChild>
+                    <Link href={`/workers/${workerId}`} className="">
+                        More details 
+                    </Link>
+                </Button>
+
+            )
+        }
+    }
 ]

@@ -6,11 +6,11 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import useRelativeTime from "@/hooks/useRelativeTime";
 import { cn } from "@/lib/utils";
-import { getRelativeTime } from "@/utils";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, RefreshCw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 
 interface DataTableProps<TData, TValue> {
@@ -37,7 +37,6 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [relativeTime, setRelativeTime] = useState<string>('');
     const [rowSelection, setRowSelection] = useState({})
     const [fetching, setFetching] = useState<boolean>(false);
 
@@ -78,22 +77,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
         },
     });
 
-    useEffect(() => {
-        if (!toolBar?.refetch?.lastUpdatedAt) return;
-
-        const lastUpdatedAt = toolBar.refetch.lastUpdatedAt;
-        const modifyRelativeTime = () => {
-            const gRT = getRelativeTime(lastUpdatedAt);
-            setRelativeTime(gRT);
-        }
-
-        const interval = setInterval(modifyRelativeTime, 5000);
-        return () => {
-            clearInterval(interval);
-        };
-
-    }, [toolBar?.refetch?.lastUpdatedAt]);
-
+    const lasttime = useRelativeTime(toolBar?.refetch?.lastUpdatedAt, 1000 * 5);
 
     const handleClick = () => {
         if (!toolBar?.refetch?.fn) return;
@@ -108,9 +92,9 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
         <div className="flex flex-col gap-2.5 mb-5">
             {showToolbar &&
                 <div className="flex justify-end gap-3 items-center">
-                    {toolBar.refetch && relativeTime &&
-                        <div className="text-xs text-muted-foreground">
-                            Last updated: {relativeTime}
+                    {toolBar.refetch &&
+                        <div className="text-xs">
+                            <span className="text-muted-foreground">Last updated</span>  {lasttime}
                         </div>
                     }
                     {toolBar?.search && <Input

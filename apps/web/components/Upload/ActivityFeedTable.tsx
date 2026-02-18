@@ -22,7 +22,7 @@ export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
 
     const { data } = useQuery<ActiveJob[]>({
         queryKey: ["active-jobs"],
-        queryFn: () => axios.get(`${API_URL}/jobs/active`).then(res => res.data),
+        queryFn: ({ signal }) => axios.get(`${API_URL}/jobs/active`, { signal }).then(res => res.data),
         refetchInterval: 1000, //every second
         enabled
     })

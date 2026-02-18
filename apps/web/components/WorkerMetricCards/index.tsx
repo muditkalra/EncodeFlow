@@ -23,7 +23,7 @@ export default function WorkerMetricCards() {
                 <WorkerMetricCard Icon={<Activity className='size-4 text-green-700' />} title='Running Workers' footer='Workers processing jobs' value={data?.running} />
             </div>
             <div className="col-span-1 md:col-span-2 lg:col-span-1">
-                <WorkerMetricCard Icon={<Pause className='size-4 text-amber-700' />} title='Idle Workers' footer='Available for new jobs' value={data?.idle} />
+                <WorkerMetricCard Icon={<Pause className='size-4 text-gray-600 dark:text-gray-400' />} title='Idle Workers' footer='Available for new jobs' value={data?.idle} />
             </div>
             <div className="col-span-1 md:col-span-3 lg:col-span-1">
                 <WorkerMetricCard Icon={<Cpu className='size-4 text-blue-700' />} title='Avg Cpu Usage' footer='Across all workers' value={formatToPercent(data?.cpu)} showPercentage />

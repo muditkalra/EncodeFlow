@@ -6,7 +6,7 @@ import axios from "axios";
 export default function useJobMetrics() {
     return useQuery<JobMetricData>({
         queryKey: ["jobMetricsData"],
-        queryFn: () => axios.get(`${API_URL}/jobmetricsdata`).then(res => res.data),
+        queryFn: ({ signal }) => axios.get(`${API_URL}/jobmetricsdata`, { signal }).then(res => res.data),
         refetchInterval: 1000 * 60, // every minute
         staleTime: 1000 * 45 // data fresh for 45 seconds
     })

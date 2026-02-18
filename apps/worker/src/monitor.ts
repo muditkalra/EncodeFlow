@@ -1,22 +1,25 @@
 import { type Redis } from "@repo/bullq";
-import { WorkerData } from "@repo/types";
+import { WorkerData, WorkerJobStage } from "@repo/types";
 import fs from "fs";
 import os from "os";
 import { redisConnection } from "./utils";
 
 export class WorkerMonitor {
     private currentJobId: string | null = null;
+    private jobStage: WorkerJobStage | null = null;
     public workerId: string;
     private redisClient: Redis = redisConnection;
     private previousCpuUsage: number | null = null;
     private previousTime: number | null = null;
     private memoryLimit: number;
     private cpuCores: number;
+    private startedAt: number;
 
     constructor(wid: string) {
         this.workerId = wid;
         this.memoryLimit = this.readMemoryLimit();
         this.cpuCores = this.readCpuCores();
+        this.startedAt = Date.now() // for worker uptime;
     }
 
     sendHeartBeat = async () => {
@@ -27,10 +30,13 @@ export class WorkerMonitor {
             workerId: this.workerId,
             status: this.currentJobId ? "RUNNING" : "IDLE",
             currentJobId: this.currentJobId,
+            jobStage: this.jobStage,
             cpu: cpuUsage,
+            cpuCores: this.cpuCores,
             memoryUsed: memUsage,
             memoryLimit: this.memoryLimit,
-            heartBeatAt: Date.now()
+            heartBeatAt: Date.now(),
+            uptime: Math.floor((Date.now() - this.startedAt) / 1000) // uptime in seconds;
         };
 
 
@@ -41,6 +47,10 @@ export class WorkerMonitor {
 
     setCurrentJobId = (id: string | null) => {
         this.currentJobId = id;
+    }
+
+    setJobStage = (stage: WorkerJobStage | null) => {
+        this.jobStage = stage;
     }
 
     getCpuUsage() {
@@ -131,13 +141,12 @@ export class WorkerMonitor {
         } catch { }
 
         // cgroup-v1
-
         try {
             const usage = fs.readFileSync("/sys/fs/cgroup/cpuacct/cpuacct.usage", "utf8");
             return Number(usage) / 1000 // nano to microseconds
         } catch { }
 
-        return 0;
+        return 0; // system cpu usage looks like this  = { user:number, system:number };
     }
 
 }

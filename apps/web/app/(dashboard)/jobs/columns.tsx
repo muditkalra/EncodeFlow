@@ -137,9 +137,10 @@ export const columns: ColumnDef<JobsColumnType>[] = [
             )
         },
         cell: ({ getValue }) => {
+            const time = getValue<Date>();
             return (
-                <div title={new Date(getValue<Date>()).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short" })}>
-                    {getRelativeTime(getValue<Date>())}
+                <div title={new Date(time).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short" })}>
+                    {getRelativeTime(time)}
                 </div>
             )
         },
