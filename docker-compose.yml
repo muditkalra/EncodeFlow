@@ -1,16 +1,16 @@
 services:
   worker:
     build:
-      dockerfile: ./Docker/Dockerfile.worker
-    # container_name: worker
+      dockerfile: ./Docker/worker/Dockerfile
+    container_name: worker
     mem_limit: 512m
     cpus: 0.5
     environment:
       NODE_ENV: production
     env_file:
       - ./apps/worker/.env
-    # deploy:
-    #   replicas: 1    
+    deploy:
+      replicas: 2
     depends_on:
       postgres:
         condition: service_healthy
@@ -76,6 +76,36 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d" # 7 days of data
+    networks:
+      - monitoring
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000" # Don't conflict with Next.js
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
 
 volumes:
   postgres_data:
