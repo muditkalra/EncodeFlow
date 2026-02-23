@@ -2,7 +2,7 @@ services:
   worker:
     build:
       dockerfile: ./Docker/worker/Dockerfile
-    container_name: worker
+    # container_name: worker
     mem_limit: 512m
     cpus: 0.5
     environment:
@@ -13,6 +13,9 @@ services:
       replicas: 2
     ports:
       - "9100"
+    networks:
+      - monitoring
+      - app
     depends_on:
       postgres:
         condition: service_healthy
@@ -31,6 +34,8 @@ services:
       POSTGRES_DB: videotranscoder
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -51,6 +56,8 @@ services:
         condition: service_healthy
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app  
 
   redis:
     image: redis:7-alpine
@@ -60,6 +67,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app  
     command: ["redis-server", "--appendonly", "yes"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -75,6 +84,8 @@ services:
       - "5540:5540"
     volumes:
       - redisinsight_data:/db
+    networks:
+      - app  
     depends_on:
       redis:
         condition: service_healthy
@@ -112,9 +123,12 @@ services:
 
 networks:
   monitoring:
+  app:
 
 volumes:
   postgres_data:
   redis_data:
   pgadmin_data:
   redisinsight_data:
+  prometheus_data:
+  grafana_data:

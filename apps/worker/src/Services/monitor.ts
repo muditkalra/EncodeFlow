@@ -2,9 +2,10 @@ import { type Redis } from "@repo/bullq";
 import { WorkerData, WorkerJobStage } from "@repo/types";
 import fs from "fs";
 import os from "os";
-import { redisConnection } from "./utils";
+import { redisConnection } from "../utils";
+import { updateWorkerMetrics } from "../metrics/workerMetric";
 
-export class WorkerMonitor {
+export class WorkerHeartbeat {
     private currentJobId: string | null = null;
     private jobStage: WorkerJobStage | null = null;
     public workerId: string;
@@ -15,34 +16,22 @@ export class WorkerMonitor {
     private cpuCores: number;
     private startedAt: number;
 
-    constructor(wid: string) {
+    constructor(wid: string, interval: number = 5000) {
         this.workerId = wid;
         this.memoryLimit = this.readMemoryLimit();
         this.cpuCores = this.readCpuCores();
         this.startedAt = Date.now() // for worker uptime;
+        setInterval(() => this.sendHeartBeat(), interval);
     }
 
     sendHeartBeat = async () => {
-        const cpuUsage = this.getCpuUsage(); // between 0 -> 1
-        const memUsage = this.readMemoryUsage(); // in bytes
+        const snapshot = this.createHeartBeat();
 
-        const heartBeatData: WorkerData = {
-            workerId: this.workerId,
-            status: this.currentJobId ? "RUNNING" : "IDLE",
-            currentJobId: this.currentJobId,
-            jobStage: this.jobStage,
-            cpu: cpuUsage,
-            cpuCores: this.cpuCores,
-            memoryUsed: memUsage,
-            memoryLimit: this.memoryLimit,
-            heartBeatAt: Date.now(),
-            uptime: Math.floor((Date.now() - this.startedAt) / 1000) // uptime in seconds;
-        };
-
-
-        await this.redisClient.hset(this.workerId, heartBeatData);
+        await this.redisClient.hset(this.workerId, snapshot);
         await this.redisClient.expire(this.workerId, 15); // expiry for worker - 15s
         await this.redisClient.sadd("known_workers", this.workerId);
+
+        updateWorkerMetrics(snapshot); //updating data to prometheus;
     }
 
     setCurrentJobId = (id: string | null) => {
@@ -146,7 +135,26 @@ export class WorkerMonitor {
             return Number(usage) / 1000 // nano to microseconds
         } catch { }
 
-        return 0; // system cpu usage looks like this  = { user:number, system:number };
+        return 0; //Needs fallback system cpu usage looks like this  = { user:number, system:number };
+    }
+
+    private createHeartBeat(): WorkerData {
+        const cpuUsage = this.getCpuUsage(); // between 0 -> 1
+        const memUsage = this.readMemoryUsage(); // in bytes
+
+        const heartBeatData: WorkerData = {
+            workerId: this.workerId,
+            status: this.currentJobId ? "RUNNING" : "IDLE",
+            currentJobId: this.currentJobId,
+            jobStage: this.jobStage,
+            cpu: cpuUsage,
+            cpuCores: this.cpuCores,
+            memoryUsed: memUsage,
+            memoryLimit: this.memoryLimit,
+            heartBeatAt: Date.now(),
+            uptime: Math.floor((Date.now() - this.startedAt) / 1000) // uptime in seconds;
+        };
+        return heartBeatData;
     }
 
 }

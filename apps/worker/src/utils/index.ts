@@ -1,4 +1,5 @@
 export * from "./createClient";
+export * from "./ffmpeg";
 
 export function calculateProgress(outTimeMs: number, duration: number): number {
     if (duration <= 0 || outTimeMs <= 0) return 0;

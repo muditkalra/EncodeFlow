@@ -1,5 +1,5 @@
 import { Worker } from "@repo/bullq";
-import { prismaClient, Status } from "@repo/db";
+import { prismaClient } from "@repo/db";
 import { GetObjectCommand, PutObjectCommand } from "@repo/s3";
 import { formatDefaults, type VideoTask } from "@repo/types";
 import { spawn } from "child_process";
@@ -10,54 +10,22 @@ import os from "os";
 import path from "path";
 import { pipeline } from "stream/promises";
 import { transcodedBucketName } from "./config/constants";
-import { createFFmpegArgs } from "./ffmpeg";
-import { WorkerMonitor } from "./monitor";
-import { calculateProgress, redisConnection, s3Client } from "./utils";
+import { recordJobData } from "./metrics/jobMetrics";
+import { startMetricServer } from "./server";
+import { DBService } from "./Services/db";
+import { WorkerHeartbeat } from "./Services/monitor";
+import { calculateProgress, createFFmpegArgs, redisConnection, s3Client } from "./utils";
 dotenv.config();
 
 
-async function startTranscodingDBNotify(jobId: string) {
-    try {
-        await prismaClient.job.update({
-            where: { id: jobId },
-            data: {
-                status: Status.PROCESSING,
-                startedAt: new Date(),
-                progress: 1
-            }
-        })
-    } catch (error) {
-        throw new Error("failed to notify db");
-    }
-}
-
-// Status of worker health;
 const workerId = `worker:${os.hostname()}:${process.pid}`;
-const workerMonitor = new WorkerMonitor(workerId);
 
-// let currentJobId: string | null = null;
-// async function sendHeartBeat() {
-//     const cpuUsage = process.cpuUsage().user;
-//     const memUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
-
-//     const heartBeatData: WorkerData = {
-//         workerId,
-//         status: currentJobId ? "RUNNING" : "IDLE",
-//         currentJobId: currentJobId,
-//         cpu: cpuUsage,
-//         memoryUsed: memUsageMB,
-//         heartBeatAt: Date.now()
-//     }
-
-//     await redisConnection.hset(workerId, heartBeatData);
-//     //setting expiry for the worker-id
-//     await redisConnection.expire(workerId, 15); // 15s
-
-//     await redisConnection.sadd("known_workers", workerId);
-// }
-
+// worker monitor service, dbService;
+const workerMonitor = new WorkerHeartbeat(workerId, 5000);
+const dbService = new DBService(prismaClient);
 
 async function processVideo(job: { data: VideoTask }) {
+    const start = Date.now();
     // here id is db-jobId and bullmq-id;
     const { id: dbJobId, bucketName, fileName, fileType, duration, outputConfig: { format, includeAudio, resolution } } = job.data;
 
@@ -66,17 +34,11 @@ async function processVideo(job: { data: VideoTask }) {
     let lastProgress = 0; // storing last progress in memory, used for comparing progress.
 
     async function updateProgress(progress: number) {
-        if (progress - lastProgress >= 5) {
-            lastProgress = progress;
-            try {
-                await prismaClient.job.update({
-                    where: { id: dbJobId },
-                    data: { progress }
-                })
-            } catch (error) {
-                throw new Error("failed to update progress to db");
-            }
+        if (progress - lastProgress < 5) {
+            return;
         }
+        await dbService.updateProgess(progress, dbJobId);
+        lastProgress = progress;
     }
 
     const dir = path.resolve("tmp");  // tmp folder;
@@ -113,11 +75,11 @@ async function processVideo(job: { data: VideoTask }) {
             throw new Error("Downloaded file is not a valid video");
         }
 
-
         // transcoding
         workerMonitor.setJobStage("transcoding");
         console.log(`[${dbJobId}] Transcoding ...`);
-        await startTranscodingDBNotify(dbJobId); // db notify --> processing started;
+        // db notify --> processing started;
+        await dbService.startTranscoding(dbJobId);
 
         await new Promise<void>((resolve, reject) => {
             if (!ffmpegPath) throw new Error("ffmpeg binary not found");
@@ -165,41 +127,27 @@ async function processVideo(job: { data: VideoTask }) {
         console.log(`Done: ${dbJobId}_${fileName}_${resolution}`);
 
         const outputUrl = `s3://${transcodedBucketName}/${outputKey}`;
-
         const outputSize = (await fs.promises.stat(localOutput)).size;
 
-        await prismaClient.job.update({
-            where: { id: dbJobId },
-            data: {
-                status: Status.COMPLETED,
-                finishedAt: new Date(),
-                progress: 100,
-                outputSize,
-                outputUrl,
-            }
-        })
-
+        recordJobData(workerId, (Date.now() - start) / 1000, "success"); // updating data for prom;
+        // notifying db status --> completed
+        await dbService.completedTranscoding(dbJobId, outputSize, outputUrl);
         return { status: "completed" };
     } catch (error) {
         console.error(`[${dbJobId}] failed`, error);
+        recordJobData(workerId, (Date.now() - start) / 1000, "failed");
 
         if (error instanceof Error) {
             const isFatal = error.message.includes("file body is empty")
                 || error.message.includes("not a valid video");
 
             if (isFatal) { // no point of retry if these error
-                await prismaClient.job.update({
-                    where: { id: dbJobId },
-                    data: {
-                        status: Status.FAILED,
-                        finishedAt: new Date(),
-                        errorMessage: error instanceof Error ? error.message : "Unknown Error"
-                    }
-                });
+                await dbService.failedJob(dbJobId, error.message);
                 return;
             }
+            return new Error(error.message);
         }
-        throw error;
+        return new Error("Unknown Error");
     } finally {
         if (fs.existsSync(localInput)) {
             fs.unlinkSync(localInput);
@@ -215,10 +163,7 @@ async function processVideo(job: { data: VideoTask }) {
 }
 
 
-const worker = new Worker("transcoding-q", processVideo, {
-    connection: redisConnection.options
-});
-
-setInterval(workerMonitor.sendHeartBeat, 5000);
+startMetricServer();
+const worker = new Worker("transcoding-q", processVideo, { connection: redisConnection.options });
 
 console.log("worker running ...");

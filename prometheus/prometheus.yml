@@ -1,10 +1,10 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 10s
+  evaluation_interval: 10s
 
 scrape_configs:
-  # Scrape Worker metrics
-  - job_name: "workers"
-    static_configs:
-      - targets: ["worker:9100"]
-    metrics_path: "/metrics"
+  - job_name: "workers" # scraping worker metrics
+    dns_sd_configs:
+      - names: ["worker"]
+        type: A
+        port: 9100
