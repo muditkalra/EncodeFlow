@@ -16,7 +16,7 @@ export class WorkerHeartbeat {
     private cpuCores: number;
     private startedAt: number;
 
-    constructor(wid: string, interval: number = 5000) {
+    constructor(wid: string, interval: number = 1000 * 10) {
         this.workerId = wid;
         this.memoryLimit = this.readMemoryLimit();
         this.cpuCores = this.readCpuCores();

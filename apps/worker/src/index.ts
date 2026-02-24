@@ -21,7 +21,7 @@ dotenv.config();
 const workerId = `worker:${os.hostname()}:${process.pid}`;
 
 // worker monitor service, dbService;
-const workerMonitor = new WorkerHeartbeat(workerId, 5000);
+const workerMonitor = new WorkerHeartbeat(workerId, 10 * 1000);
 const dbService = new DBService(prismaClient);
 
 async function processVideo(job: { data: VideoTask }) {

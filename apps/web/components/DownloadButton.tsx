@@ -20,7 +20,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
     const createDownloadUrl = useMutation({
         mutationFn: async () => {
             const startTime = Date.now();
-            const response = await axios.post(`${API_URL}/download-file-url`, { url, bucket: buttonType });
+            const response = await axios.post(`${API_URL}/api/s3/downloadUrl`, { url, bucket: buttonType });
 
             const elapsed = Date.now() - startTime;
             const minDuration = 300 // 300ms to show loading;
@@ -42,8 +42,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
 
     const downloadFile = async () => {
         if (!url) return;
-
-
+        
         try {
             const { signedUrl } = (await createDownloadUrl.mutateAsync()) as { signedUrl: string };
             window.location.href = signedUrl;

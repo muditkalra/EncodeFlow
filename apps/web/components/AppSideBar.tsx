@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudUpload, Cpu, Database, EllipsisVertical, LayoutDashboard, List, LucideIcon, Settings, User2 } from 'lucide-react';
+import { ChartArea, CloudUpload, Cpu, Database, EllipsisVertical, LayoutDashboard, List, LucideIcon, Settings, User2 } from 'lucide-react';
 import Link from 'next/link';
 // import Logo from './Logo';
 import { usePathname } from 'next/navigation';
@@ -32,6 +32,11 @@ const items: Item[] = [
 		title: "Workers",
 		url: "/workers",
 		Icon: Cpu
+	},
+	{
+		title: "Metrics",
+		url: "/metrics",
+		Icon: ChartArea
 	},
 	{
 		title: "Storage",

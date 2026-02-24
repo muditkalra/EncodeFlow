@@ -10,7 +10,7 @@ export const jobDurationHistogram = new client.Histogram({
 });
 
 export const jobProcessedCounter = new client.Counter({
-    name: "job_processed_total",
+    name: "worker_jobs_processed_total",
     help: "Total number of jobs processed",
     labelNames: ["worker_id", "status"],
     registers: [register]

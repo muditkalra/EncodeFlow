@@ -5,16 +5,7 @@ import { VideoType } from '@repo/types';
 import axios from 'axios';
 import { FileVideo } from 'lucide-react';
 
-const getVideos = async (): Promise<VideoType[]> => {
-	try {
-		const videos = await axios.get(`${API_URL}/all-videos`);
-		return videos.data;
-	} catch (error) {
-		console.log(error);
-		return [];
-	}
-}
-
+// dummy data for testing
 // const videos: VideoType[] = [
 // 	{
 // 		"id": "367c88da-4ecb-48bc-ae68-5d510d3abae0",
@@ -113,6 +104,16 @@ const getVideos = async (): Promise<VideoType[]> => {
 // 		"createdAt": new Date("2026-01-22T11:37:19.536Z")
 // 	}
 // ]
+
+const getVideos = async (): Promise<VideoType[]> => {
+	try {
+		const videos = await axios.get(`${API_URL}/api/videos/all`);
+		return videos.data;
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+}
 
 export default async function page() {
 	const videos = await getVideos();

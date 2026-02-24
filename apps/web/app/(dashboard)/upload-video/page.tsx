@@ -27,7 +27,7 @@ export default function page() {
 
 
 	const getUploadUrlMutation = useMutation({
-		mutationFn: () => axios.get(`${API_URL}/upload-url`, {
+		mutationFn: () => axios.get(`${API_URL}/api/s3/getUploadUrl`, {
 			params: {
 				"video-title": video?.name,
 				"format": video?.type
@@ -62,7 +62,7 @@ export default function page() {
 
 	const createJobMutation = useMutation({
 		mutationFn: (payload: TranscodeJobBody) =>
-			axios.post(`${API_URL}/transcode`, payload).then(res => res.data),
+			axios.post(`${API_URL}/api/jobs/createJob`, payload).then(res => res.data),
 		onMutate: async (payload: TranscodeJobBody) => {
 			await queryClient.cancelQueries({ queryKey: ["active-jobs"] });
 

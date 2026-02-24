@@ -11,8 +11,8 @@ export default function WorkerHeader({ wid, data }: { wid: string, data: WorkerD
         <div className="my-6 space-y-2">
             <div className="text-[22px] flex gap-4 items-center">
                 {wid}
-                <Badge variant={"outline"} className='flex items-center gap-1.5 border-gray-400 dark:border-neutral-700'>
-                    Alive
+                <Badge variant={"outline"} className='flex items-center gap-1.5 border-gray-400 dark:border-neutral-700 text-xs'>
+                    healthy
                     <span className="relative flex size-1 mt-0.5">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-700 opacity-75"></span>
                         <span className="relative inline-flex size-1 rounded-full bg-green-700"></span>

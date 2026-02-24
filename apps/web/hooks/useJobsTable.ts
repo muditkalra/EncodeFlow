@@ -6,7 +6,7 @@ import axios from "axios";
 export default function useJobsTable() {
     return useQuery<JobsColumnType[]>({
         queryKey: ["alljobs"],
-        queryFn: ({ signal }) => axios.get(`${API_URL}/all-jobs`, { signal }).then(res => res.data),
+        queryFn: ({ signal }) => axios.get(`${API_URL}/api/jobs/all`, { signal }).then(res => res.data),
         refetchInterval: 1000 * 60, // every minute
         staleTime: 1000 * 45 // data fresh for 45 seconds
     })
