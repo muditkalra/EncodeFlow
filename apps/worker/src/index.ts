@@ -18,7 +18,7 @@ import { calculateProgress, createFFmpegArgs, redisConnection, s3Client } from "
 dotenv.config();
 
 
-const workerId = `worker:${os.hostname()}:${process.pid}`;
+const workerId = `worker:${os.hostname()}`;
 
 // worker monitor service, dbService;
 const workerMonitor = new WorkerHeartbeat(workerId, 10 * 1000);
@@ -143,11 +143,11 @@ async function processVideo(job: { data: VideoTask }) {
 
             if (isFatal) { // no point of retry if these error
                 await dbService.failedJob(dbJobId, error.message);
-                return;
-            }
-            return new Error(error.message);
+                return {};
+            }            
+            throw error;
         }
-        return new Error("Unknown Error");
+        throw new Error("Unknown Error");
     } finally {
         if (fs.existsSync(localInput)) {
             fs.unlinkSync(localInput);
