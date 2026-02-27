@@ -6,3 +6,5 @@ export const transcodedBucketName = process.env.AWS_S3_TRANSCODED_BUCKET_NAME!;
 export const transcodingQName = 'transcoding-q';
 
 export const redisUrl = process.env.REDIS_URL!;
+
+export const promUrl = process.env.PROM_URL!;
