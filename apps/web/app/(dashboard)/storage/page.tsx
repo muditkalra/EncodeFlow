@@ -123,7 +123,7 @@ export default async function page() {
 			<div className="text-xl">
 				Storage
 			</div>
-			<div className="text-xs text-muted-foreground mt-1.5 mb-6 tracking-wide">
+			<div className="text-xs text-muted-foreground mt-1 mb-6 tracking-wide">
 				Find all the input files
 			</div>
 			{videos.length > 0 ?

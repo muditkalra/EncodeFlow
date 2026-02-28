@@ -2,7 +2,7 @@ import StorageDefaults from '@/components/Settings/StorageDefaults';
 import TranscodingDefaults from '@/components/Settings/TranscodingDefaults';
 import User from '@/components/Settings/User';
 import WorkerQueueDefaults from '@/components/Settings/WorkerQueueDefaults';
-import { Tabs, TabsContent, TabsList, TabsTrigger, } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Cpu, Database, LucideIcon, SlidersHorizontal, UserRoundCog } from 'lucide-react';
 import React from 'react';
 
@@ -41,15 +41,14 @@ const items: Item[] = [
 ]
 
 
-
 export default function page() {
 	return (
 		<div className="py-4 px-6 flex flex-col gap-8">
 			<div className="">
 				<div className="text-xl">
-					USERNAME 
+					USERNAME
 				</div>
-				<div className="text-xs text-muted-foreground mt-1.5">
+				<div className="text-xs text-muted-foreground mt-1">
 					Manage your account settings and personal perferences.
 				</div>
 			</div>

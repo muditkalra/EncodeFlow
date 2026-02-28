@@ -4,7 +4,10 @@ global:
 
 scrape_configs:
   - job_name: "workers" # scraping worker metrics
-    dns_sd_configs:
+    dns_sd_configs: # for docker containers
       - names: ["worker"]
         type: A
         port: 9100
+
+    # static_configs: # for local dev
+    #   - targets: ["192.168.29.206:9100"]

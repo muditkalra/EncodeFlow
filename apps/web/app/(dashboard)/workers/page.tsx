@@ -8,7 +8,7 @@ export default function page() {
 				<div className="text-xl">
 					Workers
 				</div>
-				<div className="text-xs text-muted-foreground mt-1.5 mb-6">
+				<div className="text-xs text-muted-foreground mt-1 mb-6">
 					Manage monitor and scale job workers
 				</div>
 			</div>

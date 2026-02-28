@@ -8,7 +8,7 @@ export const parseRange = (range: string) => {
 
     const start = end - duration;
     
-    const step = duration <= 3600 ? "15s" : duration <= 21600 ? "30s" : "60s";
+    const step = duration <= 3600 ? "30s" : duration <= 21600 ? "3m" : "5m";
 
     return { start, end, step };
 }
@@ -19,7 +19,7 @@ export const mergeSeries = (avgSeries: any, maxSeries: any, avgKey: string, maxK
     const maxValues = maxSeries[0]?.values || [];
 
     return avgValues.map((point: [number, string], i: number) => ({
-        timeStamp: point[0],
+        timeStamp: point[0].toString(),
         [avgKey]: parseFloat(point[1]),
         [maxKey]: parseFloat(maxValues[i][1])
     }))
