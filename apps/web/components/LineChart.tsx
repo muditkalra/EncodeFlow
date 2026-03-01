@@ -1,49 +1,36 @@
 "use client"
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card"
-import {
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-    type ChartConfig,
-} from "@/components/ui/chart"
-import { CpuMemChartData } from "@repo/types"
 
-
-interface Props {
+interface LineChartProps<CData> {
     title: string,
     description: string
     xAxisKey: string,
-    data: CpuMemChartData["data"] | undefined,
+    data: CData[] | undefined,
     chartConfig: ChartConfig
 }
 
-export function TimeSeriesLineChart({ data, description, title, xAxisKey, chartConfig }: Props) {
-
-
+export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey, chartConfig }: LineChartProps<CData>) {
     return (
-        <Card>
+        <Card className="flex flex-col h-full">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ChartContainer config={chartConfig} className="min-h-100 w-full">
+            <CardContent className="flex-1 min-h-0">
+                <ChartContainer config={chartConfig} className="h-full w-full">
                     <LineChart
                         accessibilityLayer
                         data={data}
+                        margin={{
+                            left: 0,
+                            right: 0,
+                        }}
                     >
-                        <CartesianGrid vertical={false} />
+                        <CartesianGrid vertical={true}/>
                         <XAxis
                             dataKey={xAxisKey}
                             tickLine={true}
@@ -51,7 +38,7 @@ export function TimeSeriesLineChart({ data, description, title, xAxisKey, chartC
                             tickMargin={8}
                             tickFormatter={(value) => {
                                 const date = new Date(value * 1000);
-                                return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                                return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })
                             }}
                         />
                         <YAxis unit={"%"} />

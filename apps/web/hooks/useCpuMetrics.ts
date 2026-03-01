@@ -1,10 +1,10 @@
 import { API_URL } from "@/utils";
-import { CpuMemChartData, JobMetricData } from "@repo/types";
+import { globalChartData } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export default function useCpuMetrics() {
-    return useQuery<CpuMemChartData>({
+    return useQuery<globalChartData>({
         queryKey: ["cpu-usage"],
         queryFn: ({ signal }) => axios.get(`${API_URL}/api/metrics/global/cpu?range=1h`, { signal }).then(res => res.data),
         refetchInterval: 1000 * 30, // every minute

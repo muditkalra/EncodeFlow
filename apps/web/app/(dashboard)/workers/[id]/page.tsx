@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import WorkerClient from '@/components/WorkerId';
+import WorkerDetail from '@/components/WorkerId';
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -13,7 +13,7 @@ export default async function page({ params }: { params: Promise<{ id: string }>
                     <MoveLeft className='size-4' /> Back to worker
                 </Link>
             </Button>
-            <WorkerClient wid={id} />
+            <WorkerDetail wid={id} />
         </div>
     )
 }

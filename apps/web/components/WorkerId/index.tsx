@@ -6,7 +6,7 @@ import MetricTab from "./MetricTab";
 import OverviewTab from "./OverviewTab";
 import WorkerHeader from "./WorkerHeader";
 
-export default function WorkerClient({ wid }: { wid: string }) {
+export default function WorkerDetail({ wid }: { wid: string }) {
 	const { data } = useWorkerDetail(wid);
 	return (
 		<>
@@ -20,7 +20,7 @@ export default function WorkerClient({ wid }: { wid: string }) {
 					<OverviewTab data={data} />
 				</TabsContent>
 				<TabsContent value="metrics" className="mt-4">
-					<MetricTab />
+					<MetricTab wid={wid} />
 				</TabsContent>
 			</Tabs>
 		</>

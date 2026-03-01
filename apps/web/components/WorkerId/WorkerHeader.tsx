@@ -1,6 +1,8 @@
 import useRelativeTime from '@/hooks/useRelativeTime';
+import { BadgeKeys } from '@/types';
 import { formatTime } from '@/utils';
 import { WorkerData } from '@repo/types';
+import StatusBadge from '../StatusBadge';
 import { Badge } from '../ui/badge';
 
 export default function WorkerHeader({ wid, data }: { wid: string, data: WorkerData | undefined }) {
@@ -34,6 +36,14 @@ export default function WorkerHeader({ wid, data }: { wid: string, data: WorkerD
                     </div>
                     <div className="">
                         {heartBeatTime}
+                    </div>
+                </div>
+                <div className="flex gap-1.5 items-center">
+                    <div className="text-muted-foreground">
+                        status :
+                    </div>
+                    <div className="">
+                        {data ? <StatusBadge value={data.status.toLowerCase() as BadgeKeys} /> : "..."}
                     </div>
                 </div>
             </div>

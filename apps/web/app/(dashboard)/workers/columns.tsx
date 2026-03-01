@@ -49,12 +49,6 @@ export const columns: ColumnDef<WorkerData>[] = [
         }
     },
     {
-        id: "currentJobId",
-        accessorKey: "currentJobId",
-        header: "JobId",
-        cell: ({ getValue }) => (getValue() || "-")
-    },
-    {
         id: "cpu",
         accessorKey: "cpu",
         header: "CPU(%)",
@@ -88,6 +82,12 @@ export const columns: ColumnDef<WorkerData>[] = [
         }
     },
     {
+        id: "currentJobId",
+        accessorKey: "currentJobId",
+        header: "JobId",
+        cell: ({ getValue }) => (getValue() || "-")
+    },
+    {
         accessorKey: "heartBeatAt",
         header: "Heartbeat At",
         cell: ({ getValue }) => {
@@ -107,7 +107,7 @@ export const columns: ColumnDef<WorkerData>[] = [
             return (
                 <Button variant={"link"} asChild>
                     <Link href={`/workers/${workerId}`} className="">
-                        More details 
+                        More details
                     </Link>
                 </Button>
 

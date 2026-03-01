@@ -18,3 +18,9 @@ export interface WorkerData {
 export type WorkerMetricKeys = "total" | "running" | "idle" | "cpu" | "mem";
 
 export type WorkerMetricData = Record<WorkerMetricKeys, number>;
+
+export type WorkerChartData = {
+    metric: "cpu" | "mem";
+    unit: "%"
+    data: { timeStamp: string, value: number }[]
+}

@@ -12,9 +12,14 @@ export const chartRangeMap: Record<string, number> = {
     "24h": 60 * 60 * 24,
 }
 
+export type ChartData = {
+    timeStamp: string;
+    avg: number;
+    max: number;
+};
 
-export type CpuMemChartData = {
-    metric: "cpu" | "mem",
-    unit: "%",
-    data: { timeStamp: string, avg: number, max: number }[]
-}
+export type globalChartData = {
+    metric: "cpu" | "mem";
+    unit: "%"
+    data: ChartData[];
+};

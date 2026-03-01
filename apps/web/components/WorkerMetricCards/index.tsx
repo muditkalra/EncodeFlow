@@ -12,6 +12,7 @@ import WorkerMetricCard from './WorkerMetricCard';
 //     mem: 12
 // }
 
+// Note: These are Redis-based live data Cards
 export default function WorkerMetricCards() {
     const { data } = useWorkerMetrics();
     return (
