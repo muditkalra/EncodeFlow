@@ -40,7 +40,7 @@ export default function UploadDropzone({ setVideo, setVideoDetail }: Props) {
 
 
     return (
-        <Card className='cursor-pointer'
+        <Card className='cursor-pointer border-dashed border'
             onClick={() => inputRef.current?.click()}
             onDragEnter={(e) => e.preventDefault()}
             onDragOver={(e) => e.preventDefault()}

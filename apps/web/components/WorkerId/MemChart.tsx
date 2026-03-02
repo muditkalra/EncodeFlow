@@ -1,6 +1,7 @@
 "use client";
 
 import useWorkerMemMetrics from '@/hooks/useWorkerMemMetrics';
+import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
 
@@ -35,16 +36,16 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-export default function MemChart({ wid }: { wid: string }) {
+export default function MemChart({ wid, range = "15m" }: { wid: string, range: TimeRanges }) {
 
-    const { data } = useWorkerMemMetrics(wid);
+    const { data } = useWorkerMemMetrics(wid, range);
 
     return (
         <TimeSeriesLineChart
             data={data?.data}
             chartConfig={chartConfig}
             title="Memory Usage"
-            description='% utilization over the interval'
+            description={`% utilization in the last ${range}`}
             xAxisKey="timeStamp"
         />
     )

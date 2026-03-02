@@ -2,6 +2,7 @@
 import useMemMetrics from '@/hooks/useMemMetrics';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
+import { type TimeRanges } from '@repo/types';
 
 // const data = [
 //     {
@@ -37,16 +38,16 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export default function MemChart() {
+export default function MemChart({ range = "15m" }: { range?: TimeRanges }) {
 
-    const { data } = useMemMetrics();
+    const { data } = useMemMetrics(range);
 
     return (
         <TimeSeriesLineChart
             data={data?.data}
             chartConfig={chartConfig}
             title='Worker Mem Usage %'
-            description='Average and Max usage over the interval'
+            description={`Average and Max usage in last ${range}`}
             xAxisKey="timeStamp"
         />
     )

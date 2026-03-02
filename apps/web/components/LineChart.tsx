@@ -30,22 +30,22 @@ export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey,
                             right: 0,
                         }}
                     >
-                        <CartesianGrid vertical={true}/>
+                        <CartesianGrid vertical={true} />
                         <XAxis
                             dataKey={xAxisKey}
                             tickLine={true}
                             axisLine={false}
                             tickMargin={8}
                             tickFormatter={(value) => {
-                                const date = new Date(value * 1000);
-                                return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })
+                                const date = new Date(Number(value) * 1000);
+                                return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
                             }}
                         />
                         <YAxis unit={"%"} />
                         <ChartTooltip cursor={true} content={<ChartTooltipContent indicator="line"
                             labelFormatter={(value) => {
                                 const date = new Date(Number(value) * 1000)
-                                return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                                return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
                             }}
                         />} />
                         {
