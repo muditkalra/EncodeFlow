@@ -1,9 +1,9 @@
 "use client";
-
 import useCpuMetrics from '@/hooks/useCpuMetrics';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
+import { Skeleton } from '../ui/skeleton';
 
 // const data = [
 //     {
@@ -29,13 +29,13 @@ import { ChartConfig } from '../ui/chart';
 // ]
 
 const chartConfig = {
+    max: {
+        label: "Maximum",
+        color: "var(--chart-7)",
+    },
     avg: {
         label: "Average",
-        color: "oklch(0.5800 0.0750 220.00)",
-    },
-    max: {
-        label: "Max",
-        color: "oklch(0.6400 0.1150 30.00)",
+        color: "var(--chart-8)",
     },
 } satisfies ChartConfig;
 
@@ -44,12 +44,16 @@ export default function CpuChart({ range = "15m" }: { range?: TimeRanges }) {
 
     const { data } = useCpuMetrics(range);
 
+    if (!data) {
+        return <Skeleton className='w-full h-70'/>
+    }
+
     return (
         <TimeSeriesLineChart
-            data={data?.data}
+            data={data.data}
             chartConfig={chartConfig}
             title='Worker CPU Usage (%)'
-            description={`Average and Max usage in last ${range}`}
+            description={`Average and Maximum usage in last ${range}`}
             xAxisKey="timeStamp"
         />
     )

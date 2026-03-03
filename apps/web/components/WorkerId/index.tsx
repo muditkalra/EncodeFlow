@@ -5,9 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import MetricTab from "./MetricTab";
 import OverviewTab from "./OverviewTab";
 import WorkerHeader from "./WorkerHeader";
+import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 export default function WorkerDetail({ wid }: { wid: string }) {
-	const { data } = useWorkerDetail(wid);
+	const { data, error } = useWorkerDetail(wid);
+
+	if (error) {
+		toast.error("Worker not available");
+		redirect("/workers");
+	}
+
 	return (
 		<>
 			<WorkerHeader wid={wid} data={data} />

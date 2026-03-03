@@ -4,6 +4,7 @@ import useWorkerCpuMetrics from '@/hooks/useWorkerCpuMetrics';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
+import { Skeleton } from '../ui/skeleton';
 
 // const data = [
 //     {
@@ -31,7 +32,7 @@ import { ChartConfig } from '../ui/chart';
 const chartConfig = {
     value: {
         label: "CPU",
-        color: "var(--chart-1)",
+        color: "var(--chart-10)",
     },
 } satisfies ChartConfig;
 
@@ -39,6 +40,10 @@ const chartConfig = {
 export default function CpuChart({ wid, range = "15m" }: { wid: string, range: TimeRanges }) {
 
     const { data } = useWorkerCpuMetrics(wid, range);
+
+    if (!data) {
+        return <Skeleton className='w-full h-full' />
+    }
 
     return (
         <TimeSeriesLineChart

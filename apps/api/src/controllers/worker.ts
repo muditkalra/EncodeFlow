@@ -64,7 +64,7 @@ export const getWorkerData = async (req: Request, res: Response) => {
         }
         const workerIdExistCheck = await redisClient.sismember("known_workers", id);
         if (!workerIdExistCheck) {
-            throw new Error("No worker found with it id");
+            throw new Error("Worker not found"); // worker is gone forever
         }
 
         const workerData = await redisClient.hgetall(id) as unknown as WorkerData;
@@ -75,7 +75,10 @@ export const getWorkerData = async (req: Request, res: Response) => {
         }
         return res.status(200).json(workerData);
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Cannot Complete the Request";
-        return res.status(400).json({ error: errorMessage });
+        if (error instanceof Error) {
+            const statusCode = error.message.includes("not found") ? 410 : 404; // 410 for permanently unavailable
+            return res.status(statusCode).json({ error: error.message });
+        }
+        return res.status(400).json({ error });
     }
 }

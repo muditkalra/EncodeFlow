@@ -26,8 +26,9 @@ export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey,
                         accessibilityLayer
                         data={data}
                         margin={{
-                            left: 0,
-                            right: 0,
+                            left: 5,
+                            right: 5,
+                            top: 5,
                         }}
                     >
                         <CartesianGrid vertical={true} />

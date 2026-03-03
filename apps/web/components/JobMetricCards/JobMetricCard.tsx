@@ -17,19 +17,17 @@ export default function JobMetricCard({ title, value, Icon, footer, classes, sta
     return (
         <Card>
             <CardContent>
-                <div className="">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">{title}</p>
-                        <Icon className={cn(classes, (status == "processing" && Number(value) > 0) ? "animate-spin" : "")} />
-                    </div>
-                    <div className="mt-2 text-3xl font-bold">
-                        {value ?? <Skeleton className='h-10 w-full rounded-sm' />}
-                    </div>
+                <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">{title}</p>
+                    <Icon className={cn(classes, (status == "processing" && Number(value) > 0) ? "animate-spin" : "")} />
+                </div>
+                <div className="mt-2 text-3xl font-bold">
+                    {value ?? <Skeleton className='h-10 w-full rounded-sm' />}
                 </div>
             </CardContent>
             <CardFooter className='text-xs text-muted-foreground'>
                 {footer}
             </CardFooter>
-        </Card>
+        </Card >
     )
 }

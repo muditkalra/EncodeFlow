@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { formatSeries, mergeSeries, parseRange } from "../../helpers";
-import { queryRange } from "../../helpers/prom";
+import { formatSeries, parseRange } from "../../helpers";
+import { queryRange } from "../../services/prometheus";
 
 export const getWorkerCpuMetrics = async (req: Request, res: Response) => {
     try {
