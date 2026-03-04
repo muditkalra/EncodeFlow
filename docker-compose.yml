@@ -1,4 +1,22 @@
 services:
+  api:
+    build:
+      dockerfile: ./Docker/api/Dockerfile
+    environment:
+      NODE_ENV: production
+    env_file:
+      - ./apps/api/.env
+    ports:
+      - "8000:8000"
+    networks:
+      - monitoring
+      - app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   worker:
     build:
       dockerfile: ./Docker/worker/Dockerfile
@@ -57,7 +75,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - app  
+      - app
 
   redis:
     image: redis:7-alpine
@@ -68,7 +86,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - app  
+      - app
     command: ["redis-server", "--appendonly", "yes"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -85,7 +103,7 @@ services:
     volumes:
       - redisinsight_data:/db
     networks:
-      - app  
+      - app
     depends_on:
       redis:
         condition: service_healthy
@@ -93,7 +111,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - "19090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -101,12 +119,9 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=7d" # 7 days of data
-    depends_on:
-      - worker
     networks:
       - monitoring
 
-  # Grafana
   grafana:
     image: grafana/grafana:latest
     ports:

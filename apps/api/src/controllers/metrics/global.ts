@@ -46,7 +46,6 @@ export const getMemMetrics = async (req: Request, res: Response) => {
 
 
 export const getKpiData = async (req: Request, res: Response) => {
-    console.log("inside");
     try {
         // throughput
         const throughputQueryProm = query('sum(rate(worker_jobs_processed_total{status="success"}[1m])) * 60');
