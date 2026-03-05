@@ -5,10 +5,13 @@ import morgan from "morgan";
 import queueEventsListeners from "./events";
 import routes from "./routes";
 import { s3Client } from "./utils";
+import promClient from "prom-client";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
+const register = new promClient.Registry();
+promClient.collectDefaultMetrics({ register });
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +28,13 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 app.use("/api", routes); // routes
+
+app.get("/metrics", async (req: Request, res: Response) => {
+    const metrics = await register.metrics();
+    res.set("Content-Type", register.contentType);
+    res.end(metrics);
+})
+
 
 const start = () => {
     try {
