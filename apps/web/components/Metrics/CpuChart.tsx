@@ -1,5 +1,5 @@
 "use client";
-import useCpuMetrics from '@/hooks/useCpuMetrics';
+import useCpuMetrics from '@/hooks/allWorkerMetric/useCpuMetrics';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';

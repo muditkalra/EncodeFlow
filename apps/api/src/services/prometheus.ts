@@ -25,7 +25,7 @@ export const query = async (query: string) => {
 
         const resp = (await axios.get(url.toString())).data
 
-        if (!resp.data.result.length) return Math.random() * 100
+        if (!resp.data.result.length) return 0;
 
         return parseFloat(resp.data.result[0].value[1]);
     } catch (error) {

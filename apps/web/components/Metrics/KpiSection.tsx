@@ -19,29 +19,34 @@ export default function KpiSection() {
     }
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <KpiCard
                 title="Throughput"
-                value={data.throughput.toFixed(2)}
-                unit="vid/min"
-                description="Videos processed per minute"
-
+                value={(data.throughput ?? 0).toFixed(2)}
+                unit="jobs/min"
+                description="Jobs processed per minute"
+            />
+            <KpiCard
+                title="Request Rate"
+                value={(data.requestRate ?? 0).toFixed(2)}
+                unit="req/min"
+                description="request per minute"
+            />
+            <KpiCard
+                title="p95 Latency"
+                value={(data.latency ?? 0).toFixed(2)}
+                unit="ms"
+                description="95th percentile latency for request"
             />
             <KpiCard
                 title="Avg Encode Time"
-                value={data.avgEncode.toFixed(2)}
+                value={(data.avgEncode ?? 0).toFixed(2)}
                 unit="s"
                 description="Average transcoding time"
             />
             <KpiCard
-                title="p95 Encode"
-                value={data.p95Encode.toFixed(2)}
-                unit="s"
-                description="95th percentile latency"
-            />
-            <KpiCard
                 title="Error Rate"
-                value={data.errorRate.toFixed(2)}
+                value={(data.errorRate ?? 0).toFixed(2)}
                 unit="%"
                 description="Failed jobs ratio"
             />

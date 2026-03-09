@@ -1,5 +1,5 @@
 "use client";
-import useMemMetrics from '@/hooks/useMemMetrics';
+import useMemMetrics from '@/hooks/allWorkerMetric/useMemMetrics';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
 import { type TimeRanges } from '@repo/types';
@@ -44,7 +44,7 @@ export default function MemChart({ range = "15m" }: { range?: TimeRanges }) {
     const { data } = useMemMetrics(range);
 
     if (!data) {
-        return <Skeleton className='w-full h-70' />
+        return <Skeleton className='w-full h-full' />
     }
 
     return (

@@ -22,8 +22,9 @@ export type globalChartData = {
 };
 
 export type KpiData = {
-    throughput: number,
-    avgEncode: number,
-    p95Encode: number,
+    throughput: number, // jobs processed per minute
+    requestRate: number, // request rate per minute
+    avgEncode: number, // avg encoding time
+    latency: number, // p95 latency in ms
     errorRate: number
 }

@@ -3,20 +3,20 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import queueEventsListeners from "./events";
+import { register } from "./metrics";
 import routes from "./routes";
 import { s3Client } from "./utils";
-import promClient from "prom-client";
+import { prometheusMiddleware } from "./middleware/prometheus";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
-const register = new promClient.Registry();
-promClient.collectDefaultMetrics({ register });
 
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.disable('etag');
+app.use(prometheusMiddleware);
 
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({

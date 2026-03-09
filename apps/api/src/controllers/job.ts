@@ -4,7 +4,9 @@ import { JobMetricData, JobMetricStatus, TranscodeJobBody, VideoTask } from "@re
 import { Request, Response } from "express";
 import { awsS3TempBucketName } from "../config/constants";
 import { s3Client, videoQueue } from "../utils";
+import { jobCreatedTotal } from "../metrics";
 
+// create a new job, right now create a new entry in video and job, push a new job to queue
 export const createJob = async (req: Request, res: Response) => {
     try {
         const { outputConfig, ...data } = req.body as TranscodeJobBody;
@@ -67,6 +69,12 @@ export const createJob = async (req: Request, res: Response) => {
         // }
         // await videoQueue.addBulk(tasks);
 
+        jobCreatedTotal.inc({
+            format: outputConfig.format,
+            resolution: outputConfig.resolution,
+            includeAudio: String(outputConfig.includeAudio)
+        });
+        
         return res.status(200).json({
             message: "Transcoding started",
             videoId: video.id,

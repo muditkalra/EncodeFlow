@@ -11,3 +11,8 @@ scrape_configs:
 
     # static_configs: # for local dev
     #   - targets: ["192.168.29.206:9100"]
+
+  - job_name: "api"
+    static_configs:
+      - targets: ["192.168.0.102:8000"] # for local dev
+      # - targets: ["localhost:8000"] # for docker container

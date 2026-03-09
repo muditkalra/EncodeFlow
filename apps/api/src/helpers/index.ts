@@ -2,13 +2,13 @@ import { chartRangeMap } from "@repo/types";
 
 // start,end,step
 export const parseRange = (range: string) => {
-    const end = Math.floor(Date.now() / 1000);
+    const end = Math.floor(Date.now() / 1000); //in seconds
 
     const duration = chartRangeMap[range] || 60 * 60; // default: 1h
 
     const start = end - duration;
 
-    const step = duration <= 3600 ? "30s" : duration <= 21600 ? "3m" : "5m";
+    const step = duration <= 900 ? "15s" : duration <= 3600 ? "30s" : duration <= 21600 ? "3m" : "5m";
 
     return { start, end, step };
 }
