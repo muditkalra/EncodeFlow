@@ -1,6 +1,6 @@
 "use client";
 
-import useWorkerCpuMetrics from '@/hooks/useWorkerCpuMetrics';
+import useWorkerCpuChart from '@/hooks/worker[id]Chart/useWorkerCpuChart';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
@@ -39,7 +39,7 @@ const chartConfig = {
 
 export default function CpuChart({ wid, range = "15m" }: { wid: string, range: TimeRanges }) {
 
-    const { data } = useWorkerCpuMetrics(wid, range);
+    const { data } = useWorkerCpuChart(wid, range);
 
     if (!data) {
         return <Skeleton className='w-full h-full' />
@@ -47,7 +47,8 @@ export default function CpuChart({ wid, range = "15m" }: { wid: string, range: T
 
     return (
         <TimeSeriesLineChart
-            data={data?.data}
+            data={data.data}
+            unit={data.unit}
             chartConfig={chartConfig}
             title="CPU Usage"
             description={`% utilization in last ${range}`}

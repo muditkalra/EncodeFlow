@@ -71,7 +71,7 @@ export const getMem = async (req: Request, res: Response) => {
         const resp = await queryRange('process_resident_memory_bytes{job="api"}/1024/1024', start, end, step);
         const data = formatSeries(resp[0].values); //  [{ timeStamp: "time_in_seconds", value: float_value }]
 
-        return res.status(200).json({ metric: "mem", unit: "%", data });
+        return res.status(200).json({ metric: "mem", unit: "MB", data });
     } catch (error) {
         console.log(error);
         return res.status(400).json(error);

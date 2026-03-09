@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { ChartData } from "@repo/types"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 
@@ -9,11 +10,12 @@ interface LineChartProps<CData> {
     title: string,
     description: string
     xAxisKey: string,
-    data: CData[] | undefined,
+    data: ChartData["data"] | undefined,
+    unit: ChartData["unit"]
     chartConfig: ChartConfig
 }
 
-export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey, chartConfig }: LineChartProps<CData>) {
+export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey, chartConfig, unit }: LineChartProps<CData>) {
     return (
         <Card className="flex flex-col h-full">
             <CardHeader>
@@ -42,7 +44,7 @@ export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey,
                                 return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
                             }}
                         />
-                        <YAxis unit={"%"} />
+                        <YAxis tickFormatter={(value) => `${value} ${unit}`} />
                         <ChartTooltip cursor={true} content={<ChartTooltipContent indicator="line"
                             labelFormatter={(value) => {
                                 const date = new Date(Number(value) * 1000)

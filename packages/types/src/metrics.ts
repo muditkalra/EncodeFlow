@@ -10,16 +10,11 @@ export const chartRangeMap: Record<string, number> = {
 }
 
 export type ChartData = {
-    timeStamp: string;
-    avg: number;
-    max: number;
+    metric: string;
+    unit: string
+    data: { timeStamp: string, value: number }[] | { timeStamp: string; avg: number; max: number; }[]
 };
 
-export type globalChartData = {
-    metric: "cpu" | "mem";
-    unit: "%"
-    data: ChartData[];
-};
 
 export type KpiData = {
     throughput: number, // jobs processed per minute

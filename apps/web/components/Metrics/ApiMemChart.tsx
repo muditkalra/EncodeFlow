@@ -1,8 +1,8 @@
 "use client";
-import useMemMetrics from '@/hooks/allWorkerMetric/useMemMetrics';
+import useApiMemChart from '@/hooks/apiChart/useApiMemChart';
+import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
-import { type TimeRanges } from '@repo/types';
 import { Skeleton } from '../ui/skeleton';
 
 // const data = [
@@ -29,19 +29,16 @@ import { Skeleton } from '../ui/skeleton';
 // ]
 
 const chartConfig = {
-    max: {
-        label: "Maximum",
+    value: {
+        label: "Memory",
         color: "var(--chart-7)",
-    },
-    avg: {
-        label: "Average",
-        color: "var(--chart-8)",
-    },
+    }
 } satisfies ChartConfig;
 
-export default function MemChart({ range = "15m" }: { range?: TimeRanges }) {
 
-    const { data } = useMemMetrics(range);
+export default function ApiMemChart({ range = "15m" }: { range?: TimeRanges }) {
+
+    const { data } = useApiMemChart(range);
 
     if (!data) {
         return <Skeleton className='w-full h-full' />
@@ -50,19 +47,11 @@ export default function MemChart({ range = "15m" }: { range?: TimeRanges }) {
     return (
         <TimeSeriesLineChart
             data={data.data}
+            unit={data.unit}
             chartConfig={chartConfig}
-            title='Worker Mem Usage %'
-            description={`Average and Maximum usage in last ${range}`}
+            title='API Mem Usage'
+            description={`usage in last ${range}`}
             xAxisKey="timeStamp"
         />
     )
 }
-
-
-
-
-
-
-
-
-

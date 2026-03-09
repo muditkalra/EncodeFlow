@@ -1,6 +1,5 @@
 "use client";
-
-import useWorkerMemChart from '@/hooks/worker[id]Chart/useWorkerMemChart';
+import useWorkersMemChart from '@/hooks/allWorkerChart/useWorkerMemChart';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';
@@ -30,16 +29,19 @@ import { Skeleton } from '../ui/skeleton';
 // ]
 
 const chartConfig = {
-    value: {
-        label: "Memory",
+    max: {
+        label: "Maximum",
+        color: "var(--chart-7)",
+    },
+    avg: {
+        label: "Average",
         color: "var(--chart-8)",
     },
 } satisfies ChartConfig;
 
+export default function WorkersMemChart({ range = "15m" }: { range?: TimeRanges }) {
 
-export default function MemChart({ wid, range = "15m" }: { wid: string, range: TimeRanges }) {
-
-    const { data } = useWorkerMemChart(wid, range);
+    const { data } = useWorkersMemChart(range);
 
     if (!data) {
         return <Skeleton className='w-full h-full' />
@@ -50,9 +52,18 @@ export default function MemChart({ wid, range = "15m" }: { wid: string, range: T
             data={data.data}
             unit={data.unit}
             chartConfig={chartConfig}
-            title="Memory Usage"
-            description={`% utilization in the last ${range}`}
+            title='Worker Mem Usage %'
+            description={`Average and Maximum usage in last ${range}`}
             xAxisKey="timeStamp"
         />
     )
 }
+
+
+
+
+
+
+
+
+

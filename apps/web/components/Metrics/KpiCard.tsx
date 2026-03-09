@@ -26,7 +26,7 @@ export default function KpiCard({ title, value, description, unit }: KpiCardProp
                         </span>
                     </div>
                 </div>
-                <div className="text-xs text-muted-foreground mt-2">
+                <div className="text-xs text-muted-foreground mt-2.5">
                     {description}
                 </div>
             </CardContent>
