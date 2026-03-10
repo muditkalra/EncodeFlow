@@ -131,10 +131,10 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                 {job.video.fileType}
                             </div>
                             <div className="text-muted-foreground text-sm">
-                                Size
+                                Resolution
                             </div>
                             <div className="">
-                                {getFileSizeWithUnit(job.video.size)}
+                                {job.video.width} x {job.video.height}p
                             </div>
                             <div className="text-muted-foreground text-sm">
                                 Duration
@@ -143,10 +143,10 @@ export default function JobDetails({ job }: JobsDetailsProps) {
                                 {formatTime(job.video.duration * 1000)}
                             </div>
                             <div className="text-muted-foreground text-sm">
-                                Resolution
+                                Size
                             </div>
                             <div className="">
-                                {job.video.width} x {job.video.height}p
+                                {getFileSizeWithUnit(job.video.size)}
                             </div>
                         </div>
                     </div>

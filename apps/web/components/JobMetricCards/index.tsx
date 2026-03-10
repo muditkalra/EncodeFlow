@@ -23,21 +23,21 @@ const cards: CardItem[] = [
         classes: "size-4"
     },
     {
-        title: "Completed",
+        title: "Completed Jobs",
         status: "completed",
         Icon: CheckCircle,
         footer: "Successfully processed",
         classes: "size-4 text-green-700"
     },
     {
-        title: "Processing",
+        title: "Processing Jobs",
         status: "processing",
         Icon: Loader2,
         footer: "Currently active",
         classes: "size-4 text-blue-600"
     },
     {
-        title: "Failed",
+        title: "Failed Jobs",
         status: "failed",
         Icon: XCircle,
         footer: "Requires retry",
@@ -71,7 +71,7 @@ export default function JobMetricCards() {
                 </div>
                 <RotateCw className={cn('size-3.5 text-accent-foreground', fetching ? "animate-spin" : "")} onClick={handleRefetching} />
             </div>
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+            <div className="grid gap-2 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
                 {cards.map(({ Icon, footer, status, title, classes }, idx) =>
                     <JobMetricCard status={status} Icon={Icon} classes={classes} footer={footer} title={title} key={status} value={data?.[status]} />
                 )}

@@ -4,11 +4,11 @@ import { awsS3TempBucketName, transcodedBucketName } from "../config/constants";
 import { parseS3Url, s3Client } from "../utils";
 
 // 1. frontend call this to get signed url to put objects in s3;
-// url will look like this, /s3/getUploadUrl?video-title=xyz&format=video/*
-export const getUploadUrl = async (req: Request, res: Response) => {
+// url will look like this, /s3/uploadUrl => body: { video-title:xyz, format:video/* }
+export const uploadUrl = async (req: Request, res: Response) => {
     try {
-        const fileName = req.query["video-title"];
-        const format = req.query["format"];
+        const fileName = req.body["video-title"];
+        const format = req.body["format"];
 
         if (!fileName || !format) {
             return res.status(500).json({ message: "Cannot Create url without video-title or format" });

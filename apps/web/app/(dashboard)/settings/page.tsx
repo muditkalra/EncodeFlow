@@ -1,9 +1,9 @@
 import StorageDefaults from '@/components/Settings/StorageDefaults';
 import TranscodingDefaults from '@/components/Settings/TranscodingDefaults';
-import User from '@/components/Settings/User';
 import WorkerQueueDefaults from '@/components/Settings/WorkerQueueDefaults';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Database, LucideIcon, SlidersHorizontal, UserRoundCog } from 'lucide-react';
+import { currentUser } from '@clerk/nextjs/server';
+import { Cpu, Database, LucideIcon, SlidersHorizontal } from 'lucide-react';
 import React from 'react';
 
 interface Item {
@@ -32,23 +32,22 @@ const items: Item[] = [
 		Icon: Database,
 		Comp: StorageDefaults
 	},
-	{
-		title: "User",
-		value: "users",
-		Icon: UserRoundCog,
-		Comp: User
-	}
 ]
 
 
-export default function page() {
+export default async function page() {
+	const user = await currentUser();
+
+	console.log(user);
+
+
 	return (
-		<div className="py-4 px-6 flex flex-col gap-8">
+		<div className="mt-4 px-6 flex flex-col gap-8">
 			<div className="">
-				<div className="text-xl">
-					USERNAME
+				<div className="text-2xl">
+					Hello, {user?.emailAddresses[0]?.emailAddress}
 				</div>
-				<div className="text-xs text-muted-foreground mt-1">
+				<div className="text-xs text-muted-foreground mt-2">
 					Manage your account settings and personal perferences.
 				</div>
 			</div>

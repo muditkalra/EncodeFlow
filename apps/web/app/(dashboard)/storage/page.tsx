@@ -1,8 +1,8 @@
 import FileCard from '@/components/FileCard';
 import { Button } from '@/components/ui/button';
-import { API_URL } from '@/utils';
+import { api } from '@/utils/axios';
+import { auth } from '@clerk/nextjs/server';
 import { VideoType } from '@repo/types';
-import axios from 'axios';
 import { FileVideo } from 'lucide-react';
 
 // dummy data for testing
@@ -106,8 +106,16 @@ import { FileVideo } from 'lucide-react';
 // ]
 
 const getVideos = async (): Promise<VideoType[]> => {
+	const { getToken } = await auth();
+	const token = await getToken();
 	try {
-		const videos = await axios.get(`${API_URL}/api/videos/all`);
+		const videos = await api.get(`api/videos/all`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			}
+		);
 		return videos.data;
 	} catch (error) {
 		console.log(error);

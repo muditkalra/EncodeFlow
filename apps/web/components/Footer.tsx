@@ -9,20 +9,20 @@ export default function Footer() {
             <div className="text-sm text-muted-foreground text-center py-2 tracking-wide">
                 Created by
                 <Button variant={"link"} className='ml-2 p-0 tracking-normal'>
-                    <Link href={"https://www.linkedin.com/in/muditkalra267"}>
+                    <Link href={"https://github.com/muditkalra"}>
                         Mudit kalra
                     </Link>
                 </Button>
             </div>
             <div className="flex gap-6">
                 <Link href={"https://www.linkedin.com/in/muditkalra267/"} className=''>
-                    <Linkedin />
+                    <Linkedin className='text-secondary' />
                 </Link>
                 <Link href={"https://x.com/muditkalra_45"}>
-                    <XIcon />
+                    <XIcon className='text-secondary' />
                 </Link>
                 <Link href={"https://github.com/muditkalra"}>
-                    <Github />
+                    <Github className='text-secondary' />
                 </Link>
             </div>
         </div>

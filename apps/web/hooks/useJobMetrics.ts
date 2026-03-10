@@ -1,12 +1,14 @@
-import { API_URL } from "@/utils";
+"use client";
 import { JobMetricData } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import useApiClient from "./useApiClient";
 
 export default function useJobMetrics() {
+    const { apiGET } = useApiClient();
+
     return useQuery<JobMetricData>({
         queryKey: ["jobMetricsData"],
-        queryFn: ({ signal }) => axios.get(`${API_URL}/api/jobs/metricsdata`, { signal }).then(res => res.data),
+        queryFn: ({ signal }) => apiGET('api/jobs/metricsdata', signal),
         refetchInterval: 1000 * 60, // every minute
         staleTime: 1000 * 45 // data fresh for 45 seconds
     })

@@ -6,10 +6,11 @@ import OutputConfig from '@/components/Upload/OutputConfig';
 import UploadActions from '@/components/Upload/UploadActions';
 import UploadDropzone from '@/components/Upload/UploadDropzone';
 import VideoPreview from '@/components/Upload/VideoPreview';
+import useApiClient from '@/hooks/useApiClient';
+import useCreateJob from '@/hooks/useCreateJob';
 import { UploadState, VideoDetail } from '@/types';
-import { API_URL } from '@/utils';
-import { ActiveJob, OutputConfigType, TranscodeJobBody } from '@repo/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { OutputConfigType, TranscodeJobBody } from '@repo/types';
+import { useMutation } from '@tanstack/react-query';
 import axios from "axios";
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -23,16 +24,11 @@ export default function page() {
 	const [progress, setProgress] = useState<number>(0);
 	const [tableEnabled, setTableEnabled] = useState<boolean>(false);
 
-	const queryClient = useQueryClient();
+	const { apiPOST } = useApiClient();
 
 
 	const getUploadUrlMutation = useMutation({
-		mutationFn: () => axios.get(`${API_URL}/api/s3/getUploadUrl`, {
-			params: {
-				"video-title": video?.name,
-				"format": video?.type
-			}
-		}).then(res => res.data),
+		mutationFn: async (): Promise<{ url: string }> => apiPOST(`api/s3/uploadUrl`, { "video-title": video?.name, "format": video?.type }),
 		onSuccess: () => {
 			toast.success("Uploading started ...");
 			setUploadState("UPLOADING");
@@ -60,44 +56,17 @@ export default function page() {
 		}
 	}
 
-	const createJobMutation = useMutation({
-		mutationFn: (payload: TranscodeJobBody) =>
-			axios.post(`${API_URL}/api/jobs/createJob`, payload).then(res => res.data),
-		onMutate: async (payload: TranscodeJobBody) => {
-			await queryClient.cancelQueries({ queryKey: ["active-jobs"] });
-
-			const newActiveJob: ActiveJob = {
-				jobId: Math.floor(Math.random() * 1000).toString(),
-				videoId: Math.floor(Math.random() * 1000).toString(),
-				progress: 0,
-				status: 'PENDING',
-				video: {
-					name: payload.fileName
-				},
-				createdAt: new Date().toString()
-			}
-
-			const previousActiveJobs = queryClient.getQueryData<ActiveJob[]>(["active-jobs"]);
-
-			queryClient.setQueryData<ActiveJob[]>(['active-jobs'], (old = []) => [newActiveJob, ...old]);
-
-			return { previousActiveJobs };
-		},
+	const createJobMutation = useCreateJob({
 		onSuccess: () => {
 			setUploadState("PROCESSING");
 			setVideo(null);
 			setVideoDetail(null);
 		},
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["active-jobs"] })
-		},
-		onError: (error, newActiveJob, context) => {
-			console.log(error);
+		onError: (error) => {
 			toast.error(error.message);
 			setUploadState("FILE_SELECTED");
-			queryClient.setQueryData(["active-jobs"], context?.previousActiveJobs);
 		}
-	});
+	})
 
 	const handleClick = async () => {
 		if (!video || !videoDetail) {

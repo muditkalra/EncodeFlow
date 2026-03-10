@@ -37,7 +37,7 @@ export default function Features() {
                     <div className="text-4xl tracking-tight">
                         Powerful. Predictable. Production-Ready
                     </div>
-                    <div className="text-muted-foreground text-lg tracking-wider">
+                    <div className="text-muted-foreground text-lg tracking-wide">
                         Every part of the pipeline is optimized for asynchronous processing, fault tolerance, and high throughput.
                     </div>
                 </div>

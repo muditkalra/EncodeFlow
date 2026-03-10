@@ -1,5 +1,5 @@
 "use client";
-import useWorkersMemChart from '@/hooks/allWorkerChart/useWorkerMemChart';
+import useWorkersMemChart from '@/hooks/allWorkerChart/useWorkersMemChart';
 import { type TimeRanges } from '@repo/types';
 import { TimeSeriesLineChart } from '../LineChart';
 import { ChartConfig } from '../ui/chart';

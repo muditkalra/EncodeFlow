@@ -1,12 +1,13 @@
-import { API_URL } from "@/utils";
 import { ChartData, TimeRanges } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import useApiClient from "../useApiClient";
 
 export default function useApiCpuChart(range: TimeRanges = "1h") {
+    const { apiGET } = useApiClient();
+
     return useQuery<ChartData>({
         queryKey: ["api-cpu-usage", range],
-        queryFn: ({ signal }) => axios.get(`${API_URL}/api/metrics/api/cpu?range=${range}`, { signal }).then(res => res.data),
+        queryFn: ({ signal }) => apiGET(`api/metrics/api/cpu?range=${range}`, signal),
         refetchInterval: 1000 * 30, // every minute
         staleTime: 1000 * 25 // data fresh for 45 seconds
     })
