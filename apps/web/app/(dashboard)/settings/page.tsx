@@ -52,8 +52,8 @@ export default function page() {
 					Manage your account settings and personal perferences.
 				</div>
 			</div>
-			<Tabs defaultValue={items[0]?.value} className=''>
-				<TabsList className='w-full max-w-4xl' variant={"line"}>
+			<Tabs defaultValue={items[0]?.value} className='w-full'>
+				<TabsList className="w-full" variant={"line"}>
 					{items.map(({ Icon, title, value }, idx) =>
 						<TabsTrigger value={value} key={idx}>
 							<Icon />
@@ -63,7 +63,7 @@ export default function page() {
 				</TabsList>
 				{
 					items.map(({ value, Comp }, idx) => (
-						<TabsContent value={value} key={idx} className='p-6 mb-5' >
+						<TabsContent value={value} key={idx} className='p-6 w-full' >
 							<Comp />
 						</TabsContent>
 					))

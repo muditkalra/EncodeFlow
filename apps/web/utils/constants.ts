@@ -10,3 +10,16 @@ export const defaultOutputConfig: OutputConfigType = {
     resolution: "1080p",
     includeAudio: true,
 }
+
+export const workerDefaults = {
+    maxConcurrent: 4,
+    retryCount: 2,
+    jobTimeout: 20,
+    workerheartbeat: 15
+}
+
+export const storageDefaults = {
+    autoDelete: "Yes",
+    retentionPeriod: "7 days",
+    maxSize: 2
+}
