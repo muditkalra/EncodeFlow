@@ -8,7 +8,7 @@ export default function KpiSection() {
 
     if (!data) {
         return (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-4 lg:grid-cols-4">
                 <Skeleton className='h-32 w-full' />
                 <Skeleton className='h-32 w-full' />
                 <Skeleton className='h-32 w-full' />
@@ -18,8 +18,8 @@ export default function KpiSection() {
     }
 
     return (
-        <div className="grid gap-2 grid-cols-6 xl:grid-cols-5">
-            <div className="col-span-2 xl:col-span-1">
+        <div className="grid gap-2 grid-cols-6 xl:grid-cols-5 h-full">
+            <div className="col-span-2 xl:col-span-1 h-full">
                 <KpiCard
                     title="Throughput"
                     value={(data.throughput ?? 0).toFixed(2)}

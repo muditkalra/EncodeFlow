@@ -67,8 +67,7 @@ export default function page() {
 			await queryClient.cancelQueries({ queryKey: ["active-jobs"] });
 
 			const newActiveJob: ActiveJob = {
-				jobId: Math.floor(Math.random() * 1000).toString(),
-				videoId: Math.floor(Math.random() * 1000).toString(),
+				id: Math.floor(Math.random() * 1000).toString(),
 				progress: 0,
 				status: 'PENDING',
 				video: {

@@ -74,7 +74,7 @@ export const createJob = async (req: Request, res: Response) => {
             resolution: outputConfig.resolution,
             includeAudio: String(outputConfig.includeAudio)
         });
-        
+
         return res.status(200).json({
             message: "Transcoding started",
             videoId: video.id,
@@ -134,6 +134,37 @@ export const getActiveJobs = async (req: Request, res: Response) => {
             },
             orderBy: {
                 createdAt: "desc"
+            }
+        })
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ error });
+    }
+}
+
+
+export const getRecentJobs = async (req: Request, res: Response) => {
+    try {
+        // find last 10 jobs
+        const result = await prismaClient.job.findMany({
+            orderBy: {
+                createdAt: "desc"
+            },
+            take: 10,
+            select: {
+                id: true,
+                status: true,
+                progress: true,
+                startedAt: true,
+                finishedAt: true,
+                createdAt: true,
+                video: {
+                    select: {
+                        name: true
+                    }
+                }
             }
         })
 

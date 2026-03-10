@@ -264,7 +264,6 @@ export default function JobTableClient() {
                 filetype: false,
                 errorMessage: false,
                 outputFormat: false,
-                outputResolution: false,
                 includeAudio: false,
             }}
             showPagination

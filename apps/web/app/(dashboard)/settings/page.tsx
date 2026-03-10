@@ -43,7 +43,7 @@ const items: Item[] = [
 
 export default function page() {
 	return (
-		<div className="py-4 px-6 flex flex-col gap-8">
+		<div className="mt-4 px-6 flex flex-col gap-8">
 			<div className="">
 				<div className="text-xl">
 					USERNAME

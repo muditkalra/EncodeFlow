@@ -1,6 +1,6 @@
 import { WorkerData, WorkerMetricData } from "@repo/types";
 import { Request, Response } from "express";
-import { redisClient } from "../utils";
+import { redisClient, videoQueue } from "../utils";
 
 // gives data about all the workers currently alive
 export const getAllWorker = async (req: Request, res: Response) => {
@@ -40,13 +40,15 @@ export const getMetricData = async (req: Request, res: Response) => {
             workers.push(data);
         }
         const totalMem = workers.reduce((acc, w) => acc += Number(w.memoryLimit), 0);
+        const { waiting, delayed } = await videoQueue.getJobCounts("waiting", "delayed");
 
         const workersMetricData: WorkerMetricData = {
             total: workers.length,
             running: workers.filter((w) => w.status == "RUNNING").length,
             idle: workers.filter((w) => w.status == "IDLE").length,
             cpu: workers.reduce((acc, w) => acc += Number(w.cpu), 0) / workers.length,
-            mem: workers.reduce((acc, w) => acc += Number(w.memoryUsed), 0) / totalMem
+            mem: workers.reduce((acc, w) => acc += Number(w.memoryUsed), 0) / totalMem,
+            depth: (waiting ?? 0) + (delayed ?? 0)
         }
 
         return res.status(200).json(workersMetricData);

@@ -61,7 +61,7 @@ export default function TranscodingDefaults() {
                 <Checkbox id='audioInclude' checked={outputConfig.includeAudio} onCheckedChange={(v) => setOutputConfig({ ...outputConfig, includeAudio: Boolean(v) })} />
                 <Label htmlFor='audioInclude' className='text-muted-foreground'>Include Audio</Label>
             </div>
-            <div className="space-x-4 place-self-end mt-5">
+            <div className="space-x-4 place-self-end">
                 <Button variant={"outline"} onClick={() => { setOutputConfig(defaultOutputConfig); toast.info("Output config set to default") }}>
                     Reset to default
                 </Button>

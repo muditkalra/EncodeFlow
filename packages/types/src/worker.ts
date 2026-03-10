@@ -15,6 +15,6 @@ export interface WorkerData {
     uptime: number; // worker uptime in seconds;
 };
 
-export type WorkerMetricKeys = "total" | "running" | "idle" | "cpu" | "mem";
+export type WorkerMetricKeys = "total" | "running" | "idle" | "cpu" | "mem" | "depth";
 
 export type WorkerMetricData = Record<WorkerMetricKeys, number>;
