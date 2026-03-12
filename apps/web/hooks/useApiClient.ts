@@ -11,6 +11,7 @@ export default function useApiClient() {
         const res = await api.get(`${url}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
             },
             signal,
         });

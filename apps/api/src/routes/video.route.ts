@@ -3,6 +3,6 @@ import { getAllVideos } from "../controllers/video";
 
 const router: Router = Router();
 
-router.use("/all", getAllVideos);
+router.get("/all", getAllVideos);
 
 export default router;

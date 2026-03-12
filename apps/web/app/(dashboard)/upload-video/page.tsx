@@ -9,6 +9,7 @@ import VideoPreview from '@/components/Upload/VideoPreview';
 import useApiClient from '@/hooks/useApiClient';
 import useCreateJob from '@/hooks/useCreateJob';
 import { UploadState, VideoDetail } from '@/types';
+import { useAuth } from '@clerk/nextjs';
 import { OutputConfigType, TranscodeJobBody } from '@repo/types';
 import { useMutation } from '@tanstack/react-query';
 import axios from "axios";
@@ -25,6 +26,7 @@ export default function page() {
 	const [tableEnabled, setTableEnabled] = useState<boolean>(false);
 
 	const { apiPOST } = useApiClient();
+	const { userId } = useAuth();
 
 
 	const getUploadUrlMutation = useMutation({
@@ -86,7 +88,7 @@ export default function page() {
 			const { format, includeAudio, resolution } = config;
 			const job: TranscodeJobBody = {
 				fileName: video.name,
-				userId: crypto.randomUUID(), // need to replace with clerk id;
+				userId: userId ?? crypto.randomUUID(),
 				fileType: video.type,
 				size: video.size,
 				duration,

@@ -7,17 +7,24 @@ import { register } from "./metrics";
 import routes from "./routes";
 import { s3Client } from "./utils";
 import { prometheusMiddleware } from "./middleware/prometheus";
+import { clerkMiddleware } from "@clerk/express";
+import { shouldBeUser } from "./middleware/auth";
+import helmet from "helmet";
+import { globalLimiter } from "./middleware/ratelimiter";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.disable('etag');
+app.use(globalLimiter);
 app.use(prometheusMiddleware);
+app.use(clerkMiddleware());
 
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
@@ -28,7 +35,7 @@ app.get('/health', (req: Request, res: Response) => {
     return;
 });
 
-app.use("/api", routes); // routes
+app.use("/api", shouldBeUser, routes); // routes
 
 app.get("/metrics", async (req: Request, res: Response) => {
     const metrics = await register.metrics();

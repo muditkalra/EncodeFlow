@@ -20,7 +20,7 @@ export const createJob = async (req: Request, res: Response) => {
         const video = await prismaClient.video.create({
             data: {
                 name: data.fileName,
-                userId: data.userId,
+                userId: req.userId || data.userId,
                 fileType: data.fileType,
                 size: data.size,
                 duration: data.duration,
