@@ -16,10 +16,13 @@ export default async function Navbar() {
                 <ThemeToggle />
                 <Show when="signed-out">
                     <SignInButton mode='modal'>
-                        <Button variant={"ghost"}>
+                        <Button variant={"outline"}>
                             Sign In
                         </Button>
                     </SignInButton>
+                </Show>
+                <Show when="signed-in">
+                    <UserButton />
                 </Show>
             </div>
         </nav>

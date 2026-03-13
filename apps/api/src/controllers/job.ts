@@ -98,6 +98,9 @@ export const getActiveJobs = async (req: Request, res: Response) => {
 
         const result = await prismaClient.job.findMany({
             where: {
+                video: req.userId ? {} : {
+                    userId: req.userId
+                },
                 OR: [
                     {
                         status: {
@@ -149,6 +152,12 @@ export const getRecentJobs = async (req: Request, res: Response) => {
     try {
         // find last 10 jobs
         const result = await prismaClient.job.findMany({
+            where: req.isAdmin ? {} :
+                {
+                    video: {
+                        userId: req.userId
+                    }
+                },
             orderBy: {
                 createdAt: "desc"
             },
@@ -179,6 +188,12 @@ export const getRecentJobs = async (req: Request, res: Response) => {
 export const getMetricData = async (req: Request, res: Response) => {
     try {
         const statusCounts = await prismaClient.job.groupBy({
+            where: req.isAdmin ? {} :
+                {
+                    video: {
+                        userId: req.userId
+                    }
+                },
             by: ["status"],
             _count: {
                 status: true
@@ -211,6 +226,11 @@ export const getMetricData = async (req: Request, res: Response) => {
 export const getAllJobs = async (req: Request, res: Response) => {
     try {
         const alljobs = await prismaClient.job.findMany({
+            where: req.isAdmin ? {} : {
+                video: {
+                    userId: req.userId
+                }
+            },
             include: {
                 video: true
             },

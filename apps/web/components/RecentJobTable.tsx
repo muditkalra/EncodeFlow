@@ -38,15 +38,26 @@ export default function RecentJobTable() {
                         <TableRow>
                             <TableHead className='w-1/3'>FileName</TableHead>
                             <TableHead className='w-1/5'>Status</TableHead>
-                            <TableHead className='w-1/5'>progress</TableHead>
-                            <TableHead className='w-1/4'>Processing time</TableHead>
-                            <TableHead className='w-1/4'>Created at</TableHead>
+                            <TableHead className='w-1/6'>Progress</TableHead>
+                            <TableHead className=''>Processing time</TableHead>
+                            <TableHead className=''>Created at</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data?.map((job, id) =>
-                            <RecentJobRow key={id} data={job} />
-                        )}
+                        {(data && data.length > 0) ?
+                            data.map((job, id) => (
+                                <RecentJobRow key={id} data={job} />
+                            ))
+                            :
+                            <TableRow>
+                                <TableCell className="h-20 text-center" colSpan={5}>
+                                    <div className="">
+                                        No Jobs yet.
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        }
+
                     </TableBody>
                 </Table>
             </div>

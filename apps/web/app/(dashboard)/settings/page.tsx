@@ -37,10 +37,7 @@ const items: Item[] = [
 
 export default async function page() {
 	const user = await currentUser();
-
-	console.log(user);
-
-
+	
 	return (
 		<div className="mt-4 px-6 flex flex-col gap-8">
 			<div className="">

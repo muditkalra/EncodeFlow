@@ -1,6 +1,8 @@
+import { Show, SignInButton } from "@clerk/nextjs";
 import { MonitorPlay, MoveRight } from "lucide-react";
-import { Button } from "./ui/button";
+import Link from "next/link";
 import HeroSectionillus from "./HeroSectionillus";
+import { Button } from "./ui/button";
 
 export default async function HeroSection() {
     return (
@@ -17,10 +19,22 @@ export default async function HeroSection() {
                     <p className="text-xl text-muted-foreground mb-12 max-w-3xl">
                         Transform terabytes of raw video into optimized streams. Enterprise-grade reliability, simple APIs, and unbeatable per-minute pricing.
                     </p>
-                    <Button className="cursor-pointer rounded-full text-base font-semibold flex gap-2 h-12 justify-center">
-                        Start Transcoding<MoveRight className="size-4" />
-                    </Button>
-
+                    <Show when="signed-out">
+                        <SignInButton mode="modal" forceRedirectUrl="/dashboard" signUpForceRedirectUrl='/dashboard'>
+                            <Button className="rounded-full h-12 flex items-center gap-2 font-semibold text-base cursor-pointer">
+                                Start Transcoding
+                                <MoveRight className="size-4" />
+                            </Button>
+                        </SignInButton>
+                    </Show>
+                    <Show when="signed-in">
+                        <Link href="/dashboard">
+                            <Button className="rounded-full h-12 flex items-center gap-2 font-semibold text-base">
+                                Start Transcoding
+                                <MoveRight className="size-4" />
+                            </Button>
+                        </Link>
+                    </Show>
                 </div>
                 <div className="hidden sm:flex col-span-1 justify-end">
                     <HeroSectionillus />

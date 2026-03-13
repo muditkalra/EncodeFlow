@@ -1,9 +1,9 @@
 "use client";
 
+import useApiClient from '@/hooks/useApiClient';
 import { API_URL } from '@/utils/constants';
 import { ActiveJob } from '@repo/types';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '../ui/table';
 import ActivityFeedRow from './ActivityFeedRow';
 
@@ -20,9 +20,11 @@ import ActivityFeedRow from './ActivityFeedRow';
 
 export default function ActivityFeedTable({ enabled }: { enabled: boolean }) {
 
+    const { apiGET } = useApiClient();
+
     const { data } = useQuery<ActiveJob[]>({
         queryKey: ["active-jobs"],
-        queryFn: ({ signal }) => axios.get(`${API_URL}/api/jobs/active`, { signal }).then(res => res.data),
+        queryFn: ({ signal }) => apiGET(`${API_URL}/api/jobs/active`, signal),
         refetchInterval: 1000, //every second
         enabled
     })

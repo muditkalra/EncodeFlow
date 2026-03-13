@@ -146,11 +146,16 @@ export default async function page() {
 					<div className="font-medium tracking-tight">
 						No Videos Yet
 					</div>
-					<div className="text-muted-foreground text-sm text-center max-w-3xs">
-						You haven't created any transcoding job yet. Get started by creating your first job.
+					<div className="text-muted-foreground text-sm text-center">
+						<div className="">
+							You haven't created any transcoding job yet.
+						</div>
+						<div className="">
+							Get started by creating your first job.
+						</div>
 					</div>
 					<div>
-						<Button asChild variant={"outline"}>
+						<Button asChild variant={"link"}>
 							<a href="/upload-video">
 								Start Transcoding
 							</a>

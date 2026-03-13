@@ -175,7 +175,9 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No result
+                                    <div className="">
+                                        No Jobs yet.
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         )}

@@ -16,5 +16,5 @@ export const createJobLimiter = rateLimit({
     max: 5, // max 5 jobs per minute
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.userId || req.ip || "anonymous"
+    keyGenerator: (req) => req.userId || "anonymous"
 });

@@ -5,6 +5,9 @@ import { Request, Response } from "express";
 export const getAllVideos = async (req: Request, res: Response) => {
     try {
         const allVideos = await prismaClient.video.findMany({
+            where: req.isAdmin ? {} : {
+                userId: req.userId
+            },
             orderBy: {
                 createdAt: "desc"
             }
