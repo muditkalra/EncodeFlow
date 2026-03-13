@@ -28,7 +28,7 @@ export default async function HeroSection() {
                         </SignInButton>
                     </Show>
                     <Show when="signed-in">
-                        <Link href="/dashboard">
+                        <Link href="/upload-video">
                             <Button className="rounded-full h-12 flex items-center gap-2 font-semibold text-base">
                                 Start Transcoding
                                 <MoveRight className="size-4" />

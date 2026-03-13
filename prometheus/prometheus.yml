@@ -12,4 +12,4 @@ scrape_configs:
 
   - job_name: "api"
     static_configs:
-      - targets: ["localhost:8000"] # for docker container
+      - targets: ["api:8000"] # for docker container

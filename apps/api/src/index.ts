@@ -38,6 +38,7 @@ app.get('/health', (req: Request, res: Response) => {
 app.use("/api", shouldBeUser, routes); // routes
 
 app.get("/metrics", async (req: Request, res: Response) => {
+    console.log("API: data scraped")
     const metrics = await register.metrics();
     res.set("Content-Type", register.contentType);
     res.end(metrics);

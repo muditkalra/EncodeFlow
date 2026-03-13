@@ -5,7 +5,7 @@ export function startMetricServer(port: number = 9100) {
     const app: Express = express();
 
     app.get('/metrics', async (req: Request, res: Response) => {
-        console.log("data is being scraped");
+        console.log("WORKER: data scraped");
         const metrics = await register.metrics();
         res.set("Content-Type", register.contentType);
         res.end(metrics);
