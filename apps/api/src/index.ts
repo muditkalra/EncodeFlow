@@ -24,7 +24,7 @@ app.use(morgan("dev"));
 app.disable('etag');
 app.use(globalLimiter);
 app.use(prometheusMiddleware);
-app.use(clerkMiddleware());
+app.set('trust proxy', true);
 
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
@@ -35,7 +35,6 @@ app.get('/health', (req: Request, res: Response) => {
     return;
 });
 
-app.use("/api", shouldBeUser, routes); // routes
 
 app.get("/metrics", async (req: Request, res: Response) => {
     console.log("API: data scraped")
@@ -44,6 +43,7 @@ app.get("/metrics", async (req: Request, res: Response) => {
     res.end(metrics);
 })
 
+app.use("/api", clerkMiddleware(), shouldBeUser, routes); // routes
 
 const start = () => {
     try {
