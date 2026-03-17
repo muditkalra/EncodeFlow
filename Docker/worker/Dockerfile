@@ -40,6 +40,7 @@ FROM node:20-slim AS runtime
 RUN apt-get update && apt-get install -y \
     openssl \
     ca-certificates \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

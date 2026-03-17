@@ -1,5 +1,5 @@
 import cors from "cors";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import queueEventsListeners from "./events";
@@ -11,11 +11,11 @@ import { clerkMiddleware } from "@clerk/express";
 import { shouldBeUser } from "./middleware/auth";
 import helmet from "helmet";
 import { globalLimiter } from "./middleware/ratelimiter";
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
 
+config(); // env config
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -47,7 +47,7 @@ app.get("/metrics", async (req: Request, res: Response) => {
 
 const start = () => {
     try {
-        app.listen(port, () => {
+        app.listen(Number(port), "0.0.0.0", () => {
             console.log(`api-service are running on: http://localhost:${port}`);
             queueEventsListeners();
         })
