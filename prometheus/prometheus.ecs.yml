@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "workers"
+    dns_sd_configs:
+      - names: ["worker.video-transcoder.local"] # Change to your Cloud Map DNS
+        type: A
+        port: 9100
+
+  - job_name: "api"
+    static_configs:
+      - targets: ["api.video-transcoder.local:8000"] # Change to your Cloud Map DNS
