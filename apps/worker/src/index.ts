@@ -6,7 +6,6 @@ import { spawn } from "child_process";
 import dotenv from "dotenv";
 import ffmpegPath from "ffmpeg-static";
 import fs from "fs";
-import os from "os";
 import path from "path";
 import { pipeline } from "stream/promises";
 import { transcodedBucketName } from "./config/constants";
@@ -18,7 +17,7 @@ import { calculateProgress, createFFmpegArgs, redisConnection, s3Client } from "
 dotenv.config();
 
 
-const workerId = `worker:${os.hostname()}`;
+const workerId = `worker:${crypto.randomUUID()}`;
 
 // worker monitor service, dbService;
 const workerMonitor = new WorkerHeartbeat(workerId, 10 * 1000);
@@ -77,7 +76,7 @@ async function processVideo(job: { data: VideoTask }) {
 
         // transcoding
         workerMonitor.setJobStage("transcoding");
-        console.log(`[${dbJobId}] Transcoding ...`);
+        console.log(`[${dbJobId}] db notify: Transcoding ...`);
         // db notify --> processing started;
         await dbService.startTranscoding(dbJobId);
 
@@ -85,6 +84,7 @@ async function processVideo(job: { data: VideoTask }) {
             if (!ffmpegPath) throw new Error("ffmpeg binary not found");
 
             const args = createFFmpegArgs(localInput, { format, includeAudio, resolution }, localOutput);
+            console.log(`[${dbJobId}] Transcoding ...`);
             const ffmpeg = spawn(ffmpegPath, args);
 
             ffmpeg.stderr.on("data", async (chunk) => {
@@ -124,14 +124,13 @@ async function processVideo(job: { data: VideoTask }) {
         });
         await s3Client.send(uploadCmd);
 
-        console.log(`Done: ${dbJobId}_${fileName}_${resolution}`);
-
         const outputUrl = `s3://${transcodedBucketName}/${outputKey}`;
         const outputSize = (await fs.promises.stat(localOutput)).size;
 
         recordJobData(workerId, (Date.now() - start) / 1000, "success"); // updating data for prom;
-        // notifying db status --> completed
-        await dbService.completedTranscoding(dbJobId, outputSize, outputUrl);
+        await dbService.completedTranscoding(dbJobId, outputSize, outputUrl); // notifying db status --> completed
+
+        console.log(`Done: ${dbJobId}_${fileName}_${resolution}`);
         return { status: "completed" };
     } catch (error) {
         console.error(`[${dbJobId}] failed`, error);
@@ -144,7 +143,7 @@ async function processVideo(job: { data: VideoTask }) {
             if (isFatal) { // no point of retry if these error
                 await dbService.failedJob(dbJobId, error.message);
                 return {};
-            }            
+            }
             throw error;
         }
         throw new Error("Unknown Error");

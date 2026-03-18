@@ -7,7 +7,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "db:generate": "cd packages/db && pnpm run db:generate"
+    "db:generate": "cd packages/db && pnpm run db:generate",
+    "db:migrate": "cd packages/db && pnpm run db:migrate",
+    "db:deploy": "cd packages/db && pnpm run db:deploy"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

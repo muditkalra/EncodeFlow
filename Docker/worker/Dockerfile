@@ -57,4 +57,7 @@ COPY --from=build /app/packages ./packages
 WORKDIR /app/apps/worker
 
 ENV NODE_ENV=production
+
+EXPOSE 9100
+
 CMD ["node", "dist/index.cjs"]

@@ -9,6 +9,7 @@ import { Download, Loader } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 import { Button, buttonVariants } from './ui/button';
+import useApiClient from '@/hooks/useApiClient';
 
 type DownloadButtonProps = React.ComponentProps<"button"> &
     VariantProps<typeof buttonVariants> &
@@ -17,10 +18,12 @@ type DownloadButtonProps = React.ComponentProps<"button"> &
 
 export default function DownloadButton({ className, children, disabled, buttonType, url, variant = "default", size = "default" }: DownloadButtonProps) {
 
+    const { apiPOST } = useApiClient();
+
     const createDownloadUrl = useMutation({
         mutationFn: async () => {
             const startTime = Date.now();
-            const response = await axios.post(`${API_URL}/api/s3/downloadUrl`, { url, bucket: buttonType });
+            const response = await apiPOST(`${API_URL}/api/s3/downloadUrl`, { url, bucket: buttonType });
 
             const elapsed = Date.now() - startTime;
             const minDuration = 300 // 300ms to show loading;
@@ -29,7 +32,7 @@ export default function DownloadButton({ className, children, disabled, buttonTy
                 await new Promise((resolve) => setTimeout(resolve, minDuration - elapsed));
             }
 
-            return response.data;
+            return response;
         },
         onSuccess: () => {
             toast.success("Downloading Initiated...");
@@ -42,10 +45,17 @@ export default function DownloadButton({ className, children, disabled, buttonTy
 
     const downloadFile = async () => {
         if (!url) return;
-        
+
         try {
             const { signedUrl } = (await createDownloadUrl.mutateAsync()) as { signedUrl: string };
-            window.location.href = signedUrl;
+            
+            const link = document.createElement('a');
+            link.href = signedUrl;
+            
+            link.setAttribute('download', '');       
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         } catch (error) {
             console.log(error);
             toast.error("Failed to download file");
