@@ -1,8 +1,8 @@
 "use client";
 
 import { ChartArea, CloudUpload, Cpu, Database, EllipsisVertical, LayoutDashboard, List, LucideIcon, Settings, User2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-// import Logo from './Logo';
 import { usePathname } from 'next/navigation';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
@@ -62,9 +62,8 @@ export default function AppSideBar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild>
 							<Link href={"/"}>
-								{/* <Logo size={110} /> */}
-								{/* <Image src="/logo3.png" alt='logo' width={100} height={100} /> */}
-								<span>Video Transcoder</span>
+								<Image src="/logo.png" alt='logo' className='size-10' width={100} height={100} />
+								<span>EncodeFlow</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
