@@ -1,4 +1,10 @@
+import { Metadata } from 'next'
 import JobTableClient from './jobTableclient'
+
+export const metadata: Metadata = {
+    title: "Jobs",
+    description: "View all transcoding Jobs",
+}
 
 export default function page() {
     return (

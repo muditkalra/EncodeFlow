@@ -4,6 +4,7 @@ import WorkerQueueDefaults from '@/components/Settings/WorkerQueueDefaults';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { currentUser } from '@clerk/nextjs/server';
 import { Cpu, Database, LucideIcon, SlidersHorizontal } from 'lucide-react';
+import { Metadata } from 'next';
 import React from 'react';
 
 interface Item {
@@ -34,10 +35,15 @@ const items: Item[] = [
 	},
 ]
 
+export const metadata: Metadata = {
+	title: "Settings",
+	description: "Manage your default settings",
+}
+
 
 export default async function page() {
 	const user = await currentUser();
-	
+
 	return (
 		<div className="mt-4 px-6 flex flex-col gap-8">
 			<div className="">

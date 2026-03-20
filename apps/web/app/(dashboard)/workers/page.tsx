@@ -1,5 +1,11 @@
 import WorkerMetricCards from '@/components/WorkerMetricCards'
 import WorkerTableClient from './workerTableClient'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+	title: "Worker",
+	description: "Manager and monitor worker metrics",
+}
 
 export default function page() {
 	return (

@@ -4,6 +4,7 @@ import { api } from '@/utils/axios';
 import { auth } from '@clerk/nextjs/server';
 import { VideoType } from '@repo/types';
 import { FileVideo } from 'lucide-react';
+import { Metadata } from 'next';
 
 // dummy data for testing
 // const videos: VideoType[] = [
@@ -121,6 +122,11 @@ const getVideos = async (): Promise<VideoType[]> => {
 		console.log(error);
 		return [];
 	}
+}
+
+export const metadata: Metadata = {
+	title: "Storage",
+	description: "Manage your videos",
 }
 
 export default async function page() {

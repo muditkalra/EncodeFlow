@@ -1,6 +1,10 @@
-import { TimeSeriesLineChart } from '@/components/LineChart'
 import Metrics from '@/components/Metrics'
-import React from 'react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+	title: "Global Metrics",
+	description: "Monitor and observe your Worker and API",
+}
 
 export default function page() {
     return (

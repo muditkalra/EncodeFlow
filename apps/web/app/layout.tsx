@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from "next";
 import { Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { baseMetadata } from "@/utils/metadata";
 
 const fontSans = Geist_Mono({
 	subsets: ["latin"],
@@ -14,10 +15,7 @@ const fontMono = JetBrains_Mono({
 	variable: "--font-mono",
 });
 
-export const metadata: Metadata = {
-	title: "EncodeFlow",
-	description: "Video transcoding service",
-};
+export const metadata: Metadata = baseMetadata;
 
 export default function RootLayout({
 	children,

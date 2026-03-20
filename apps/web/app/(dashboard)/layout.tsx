@@ -3,7 +3,16 @@ import DashboardNavbar from "@/components/DashboardNavbar";
 import QueryProvider from "@/components/Providers/QueryProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+    title: {
+        template:"%s | EnCodeFlow",
+        default:"EncodeFlow Dashboard",
+    },
+    description: "Video transcoding service",
+};
 
 
 export default async function RootLayout({
