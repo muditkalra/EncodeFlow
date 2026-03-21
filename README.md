@@ -25,6 +25,8 @@
 
 </div>
 
+![Dashboard](/asset/image.png)
+
 ## 📌 Overview
 
 EncodeFlow is a **distributed video processing platform** designed to handle large-scale transcoding workloads efficiently.
