@@ -25,7 +25,7 @@
 
 </div>
 
-![Dashboard](/asset/image.png)
+![Dashboard](/asset/dashboard.png)
 
 ## 📌 Overview
 
