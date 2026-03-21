@@ -21,7 +21,7 @@ export default function Footer() {
                 <Link href={"https://x.com/muditkalra_45"}>
                     <XIcon className='text-secondary' />
                 </Link>
-                <Link href={"https://github.com/muditkalra"}>
+                <Link href={"https://github.com/muditkalra/EncodeFlow"}>
                     <Github className='text-secondary' />
                 </Link>
             </div>
