@@ -15,7 +15,7 @@
 **A scalable, production-grade distributed video transcoding platform**
 
 [![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=flat-square&logo=turborepo)](https://turbo.build/)
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
 [![Express](https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express)](https://expressjs.com/)
 [![BullMQ](https://img.shields.io/badge/BullMQ-Queue-FF4B4B?style=flat-square)](https://bullmq.io/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)](https://prisma.io/)
@@ -212,8 +212,7 @@ Supported transcode targets (driven by `outputConfig`):
 | Field          | Examples                        |
 | -------------- | ------------------------------- |
 | `resolution`   | `1080p`, `720p`, `480p`, `360p` |
-| `format`       | `mp4`, `webm`                   |
-| `codec`        | `h264`, `vp9`                   |
+| `format`       | `mp4`, `webm`, `hevc`           |
 | `includeAudio` | `true` / `false`                |
 
 FFmpeg progress is parsed from stderr and continuously written to the `Job.progress` field in PostgreSQL, which the web UI polls to render live progress bars.
