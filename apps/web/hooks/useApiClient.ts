@@ -1,4 +1,3 @@
-import { API_URL } from "@/utils";
 import { api } from "@/utils/axios";
 import { useAuth } from "@clerk/nextjs";
 

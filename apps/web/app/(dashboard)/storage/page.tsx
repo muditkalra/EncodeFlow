@@ -119,7 +119,6 @@ const getVideos = async (): Promise<VideoType[]> => {
 		);
 		return videos.data;
 	} catch (error) {
-		console.log(error);
 		return [];
 	}
 }
@@ -154,7 +153,7 @@ export default async function page() {
 					</div>
 					<div className="text-muted-foreground text-sm text-center">
 						<div className="">
-							You haven't created any transcoding job yet.
+							You haven&apos;t created any transcoding job yet.
 						</div>
 						<div className="">
 							Get started by creating your first job.

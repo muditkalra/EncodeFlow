@@ -6,7 +6,7 @@ import { columns } from './columns';
 
 
 export default function WorkerTableClient() {
-    const { data, isLoading, refetch, dataUpdatedAt } = useWorkerTable();
+    const { data, isLoading, dataUpdatedAt } = useWorkerTable();
     return (
         <DataTable
             columns={columns}

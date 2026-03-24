@@ -6,7 +6,7 @@ import { ChartData } from "@repo/types"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 
-interface LineChartProps<CData> {
+interface LineChartProps {
     title: string,
     description: string
     xAxisKey: string,
@@ -15,7 +15,7 @@ interface LineChartProps<CData> {
     chartConfig: ChartConfig
 }
 
-export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey, chartConfig, unit }: LineChartProps<CData>) {
+export function TimeSeriesLineChart({ data, description, title, xAxisKey, chartConfig, unit }: LineChartProps) {
     return (
         <Card className="flex flex-col h-full">
             <CardHeader>
@@ -52,9 +52,10 @@ export function TimeSeriesLineChart<CData>({ data, description, title, xAxisKey,
                             }}
                         />} />
                         {
-                            Object.entries(chartConfig).map(([dataKey, config]) => (
+                            Object.entries(chartConfig).map(([dataKey, config], idx) => (
                                 <Line
                                     dataKey={dataKey}
+                                    key={dataKey + idx}
                                     type="monotone"
                                     stroke={config["color"]}
                                     strokeWidth={2}

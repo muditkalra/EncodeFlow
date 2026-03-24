@@ -14,7 +14,7 @@ interface props {
     uploadState: UploadState;
 }
 
-export default function OutputConfig({ config, setConfig, disabled, uploadState }: props) {
+export default function OutputConfig({ config, setConfig, disabled }: props) {
     return (
         <div className="gap-4 flex flex-col py-2">
             <div>

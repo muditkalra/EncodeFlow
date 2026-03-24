@@ -11,7 +11,7 @@ interface Item {
 	title: string;
 	value: string;
 	Icon: LucideIcon
-	Comp: React.ComponentType<any>
+	Comp: React.FC
 }
 
 const items: Item[] = [

@@ -15,7 +15,7 @@ export const baseMetadata: Metadata = {
         siteName: "encodeflow",
         images: [
             {
-                url: "https://encodeflow.muditkalra.in/og/og-image.png", // Must be an absolute URL
+                url: "https://encodeflow.muditkalra.in/og/og-image.png",
                 width: 1200,
                 height: 630,
                 alt: "EncodeFlow preview",
@@ -30,7 +30,7 @@ export const baseMetadata: Metadata = {
         card: "summary_large_image",
         title: "EncodeFlow | High-Performance Video Transcoding",
         description: "The open-source engine for fast media processing.",
-        images: ["https://encodeflow.com/og/og-image.png"], // Absolute URL
+        images: ["https://encodeflow.com/og/og-image.png"],
         creator: "@muditkalra_45",
     },
 

@@ -1,15 +1,14 @@
 "use client";
 
+import useApiClient from '@/hooks/useApiClient';
 import { cn } from '@/lib/utils';
 import { API_URL } from '@/utils';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { VariantProps } from 'class-variance-authority';
 import { Download, Loader } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 import { Button, buttonVariants } from './ui/button';
-import useApiClient from '@/hooks/useApiClient';
 
 type DownloadButtonProps = React.ComponentProps<"button"> &
     VariantProps<typeof buttonVariants> &
@@ -48,11 +47,11 @@ export default function DownloadButton({ className, children, disabled, buttonTy
 
         try {
             const { signedUrl } = (await createDownloadUrl.mutateAsync()) as { signedUrl: string };
-            
+
             const link = document.createElement('a');
             link.href = signedUrl;
-            
-            link.setAttribute('download', '');       
+
+            link.setAttribute('download', '');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

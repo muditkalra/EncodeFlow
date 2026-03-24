@@ -54,7 +54,7 @@ export function DataTable<TData, TValue>({ columns, data, loading, initialColumn
                     ),
                 }))
                 : columns,
-        [loading]
+        [loading, columns]
     );
 
     const table = useReactTable({

@@ -1,7 +1,5 @@
-import { API_URL } from "@/utils";
 import { WorkerData } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import useApiClient from "./useApiClient";
 
 export default function useWorkerDetail(id: string) {

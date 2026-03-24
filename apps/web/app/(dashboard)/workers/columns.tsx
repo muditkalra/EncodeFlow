@@ -3,11 +3,11 @@
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import useRelativeTime from "@/hooks/useRelativeTime";
 import { formatToPercent } from "@/utils";
 import type { WorkerData, WorkerStatus } from "@repo/types";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import HeartBeatCell from "./heartBeatCell";
 
 
 export const columns: ColumnDef<WorkerData>[] = [
@@ -92,11 +92,8 @@ export const columns: ColumnDef<WorkerData>[] = [
         header: "Heartbeat At",
         cell: ({ getValue }) => {
             const value = Number(getValue<number>());
-            const relativeTime = useRelativeTime(Number(value));
             return (
-                <div title={new Date(value).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "long" })}>
-                    {relativeTime}
-                </div>
+                <HeartBeatCell value={value} />
             )
         },
     },

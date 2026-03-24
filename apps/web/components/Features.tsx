@@ -1,5 +1,4 @@
-import { ChartNoAxesCombined, FileVideoCamera, Repeat, Settings, Sparkles, Star } from 'lucide-react';
-import React from 'react'
+import { ChartNoAxesCombined, FileVideoCamera, Repeat, Settings, Star } from 'lucide-react';
 
 const features = [
     {
@@ -30,7 +29,7 @@ export default function Features() {
         <div className="flex flex-col gap-10 items-center text-center mb-24 xl:mx-10 xl:mt-20">
             <div className="space-y-4">
                 <div className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-secondary text-secondary-foreground gap-2">
-                    <Star className='text-primary fill-primary size-4!'/>
+                    <Star className='text-primary fill-primary size-4!' />
                     Features
                 </div>
                 <div className="flex flex-col gap-2">
